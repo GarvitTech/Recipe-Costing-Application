@@ -5,12 +5,16 @@ using System.Windows;
 using System.Windows.Controls;
 using RecipeCostingApp.Models;
 using RecipeCostingApp.Services;
+using Microsoft.Win32;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace RecipeCostingApp.Views
 {
     public partial class ItemMasterPage : Page
     {
         private readonly IngredientService _ingredientService;
+        private readonly ImportService _importService;
         private List<Ingredient> _allIngredients;
         private Ingredient _currentIngredient;
 
@@ -18,6 +22,7 @@ namespace RecipeCostingApp.Views
         {
             InitializeComponent();
             _ingredientService = new IngredientService();
+            _importService = new ImportService();
             LoadData();
             SetupEventHandlers();
         }
@@ -251,6 +256,125 @@ namespace RecipeCostingApp.Views
         {
             LoadData();
             TxtSearch.Text = "";
+        }
+
+        private async void BtnImportExcel_Click(object sender, RoutedEventArgs e)
+        {
+            var openFileDialog = new OpenFileDialog
+            {
+                Title = "Select Excel File",
+                Filter = "Excel Files (*.xlsx;*.xls)|*.xlsx;*.xls|All Files (*.*)|*.*",
+                FilterIndex = 1
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                await ImportFromFileAsync(openFileDialog.FileName, "Excel");
+            }
+        }
+
+        private async void BtnImportPdf_Click(object sender, RoutedEventArgs e)
+        {
+            var openFileDialog = new OpenFileDialog
+            {
+                Title = "Select PDF File",
+                Filter = "PDF Files (*.pdf)|*.pdf|All Files (*.*)|*.*",
+                FilterIndex = 1
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                await ImportFromFileAsync(openFileDialog.FileName, "PDF");
+            }
+        }
+
+        private async void BtnImportImage_Click(object sender, RoutedEventArgs e)
+        {
+            var openFileDialog = new OpenFileDialog
+            {
+                Title = "Select Image File",
+                Filter = "Image Files (*.jpg;*.jpeg;*.png;*.bmp)|*.jpg;*.jpeg;*.png;*.bmp|All Files (*.*)|*.*",
+                FilterIndex = 1
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                await ImportFromFileAsync(openFileDialog.FileName, "Image");
+            }
+        }
+
+        private async Task ImportFromFileAsync(string filePath, string fileType)
+        {
+            try
+            {
+                // Show loading indicator
+                var originalCursor = this.Cursor;
+                this.Cursor = System.Windows.Input.Cursors.Wait;
+
+                List<Ingredient> importedIngredients = new List<Ingredient>();
+
+                switch (fileType.ToUpper())
+                {
+                    case "EXCEL":
+                        importedIngredients = await _importService.ImportFromExcelAsync(filePath);
+                        break;
+                    case "PDF":
+                        importedIngredients = await _importService.ImportFromPdfAsync(filePath);
+                        break;
+                    case "IMAGE":
+                        var result = await _importService.ProcessImageAsync(filePath);
+                        MessageBox.Show($"Image processing result: {result}\n\nNote: OCR functionality requires additional setup. For now, please manually enter ingredients from the image.", 
+                                      "Image Import", MessageBoxButton.OK, MessageBoxImage.Information);
+                        return;
+                }
+
+                this.Cursor = originalCursor;
+
+                if (importedIngredients.Count == 0)
+                {
+                    MessageBox.Show($"No ingredients found in the {fileType} file. Please check the file format and try again.", 
+                                  "Import Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
+                // Show preview dialog
+                var previewResult = ShowImportPreview(importedIngredients, fileType);
+                if (previewResult == MessageBoxResult.Yes)
+                {
+                    var savedCount = await _importService.SaveImportedIngredientsAsync(importedIngredients, true);
+                    MessageBox.Show($"Successfully imported {savedCount} out of {importedIngredients.Count} ingredients.\n\nDuplicates were skipped.", 
+                                  "Import Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+                    LoadData();
+                }
+            }
+            catch (Exception ex)
+            {
+                this.Cursor = System.Windows.Input.Cursors.Arrow;
+                MessageBox.Show($"Error importing from {fileType}: {ex.Message}", "Import Error", 
+                              MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private MessageBoxResult ShowImportPreview(List<Ingredient> ingredients, string fileType)
+        {
+            var previewText = $"Found {ingredients.Count} ingredients in {fileType} file:\n\n";
+            
+            // Show first 10 ingredients as preview
+            var previewItems = ingredients.Take(10);
+            foreach (var ingredient in previewItems)
+            {
+                previewText += $"• {ingredient.Name} ({ingredient.Category}) - {ingredient.Price:C}\n";
+            }
+
+            if (ingredients.Count > 10)
+            {
+                previewText += $"... and {ingredients.Count - 10} more ingredients\n";
+            }
+
+            previewText += "\nDo you want to import these ingredients?\n(Duplicates will be skipped)";
+
+            return MessageBox.Show(previewText, "Import Preview", 
+                                 MessageBoxButton.YesNo, MessageBoxImage.Question);
         }
     }
 }

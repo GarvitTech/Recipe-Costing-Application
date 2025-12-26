@@ -99,14 +99,35 @@
                 <!-- Search Bar -->
                 <Border Grid.Row="0" Background="{StaticResource BackgroundBrush}" 
                         BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" Padding="15,10">
-                    <StackPanel Orientation="Horizontal">
-                        <Label Content="🔍 Search:" Style="{StaticResource FieldLabel}"/>
-                        <TextBox Name="TxtSearch" Style="{StaticResource InputTextBox}" Width="300" 
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="300"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <Label Grid.Column="0" Content="🔍 Search:" Style="{StaticResource FieldLabel}"/>
+                        <TextBox Grid.Column="1" Name="TxtSearch" Style="{StaticResource InputTextBox}" 
                                 TextChanged="TxtSearch_TextChanged" 
                                 ToolTip="Search by name or category"/>
-                        <Button Name="BtnRefresh" Content="🔄 Refresh" Style="{StaticResource PrimaryButton}" 
+                        <Button Grid.Column="2" Name="BtnRefresh" Content="🔄 Refresh" Style="{StaticResource PrimaryButton}" 
                                Margin="20,0,0,0" Click="BtnRefresh_Click"/>
-                    </StackPanel>
+                        
+                        <!-- Import Buttons -->
+                        <StackPanel Grid.Column="4" Orientation="Horizontal">
+                            <Button Name="BtnImportExcel" Content="📊 Import Excel" Style="{StaticResource PrimaryButton}" 
+                                   Margin="10,0,0,0" Click="BtnImportExcel_Click" 
+                                   ToolTip="Import ingredients from Excel file (.xlsx, .xls)"/>
+                            <Button Name="BtnImportPdf" Content="📄 Import PDF" Style="{StaticResource PrimaryButton}" 
+                                   Margin="10,0,0,0" Click="BtnImportPdf_Click" 
+                                   ToolTip="Import ingredients from PDF file"/>
+                            <Button Name="BtnImportImage" Content="🖼️ Import Image" Style="{StaticResource PrimaryButton}" 
+                                   Margin="10,0,0,0" Click="BtnImportImage_Click" 
+                                   ToolTip="Import ingredients from image file (jpg, png, bmp)"/>
+                        </StackPanel>
+                    </Grid>
                 </Border>
 
                 <!-- Ingredients Grid -->

@@ -22,6 +22,7 @@ A complete Windows desktop application for restaurant recipe costing, menu engin
 
 ### 📊 Item Master Management
 - Complete ingredient database with categories
+- **Import from Excel, PDF, and Image files**
 - Unit conversions and purchase tracking
 - Waste percentage and yield calculations
 - Real-time cost per unit calculations
@@ -83,6 +84,8 @@ A complete Windows desktop application for restaurant recipe costing, menu engin
 ### Getting Started
 1. Launch the application
 2. Start with **Item Master** to add your ingredients
+   - Use manual entry for individual ingredients
+   - Use **Import** buttons for bulk ingredient import from Excel/PDF files
 3. Create recipes in **Recipe Management**
 4. Analyze costs in **Costing Analysis**
 5. Use **Bulk Costing** for events
@@ -118,6 +121,7 @@ RecipeCostingApp/
 ## 📄 Documentation
 
 - `USER_GUIDE.md` - Detailed user instructions
+- `IMPORT_FEATURE_GUIDE.md` - Import functionality guide
 - `ICON_SETUP.md` - Application icon configuration
 - `DEPLOYMENT_COMPLETE.md` - Final deployment status
 
