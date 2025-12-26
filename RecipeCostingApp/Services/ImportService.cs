@@ -101,12 +101,14 @@ namespace RecipeCostingApp.Services
         private Dictionary<string, int> MapColumns(ExcelWorksheet worksheet, int headerRow)
         {
             var columnMap = new Dictionary<string, int>();
+            var additionalColumns = new Dictionary<string, int>();
             
             for (int col = 1; col <= worksheet.Dimension.End.Column; col++)
             {
                 var header = worksheet.Cells[headerRow, col].Text?.ToLower().Trim();
                 if (string.IsNullOrEmpty(header)) continue;
 
+                // Map known fields (case-insensitive)
                 if (header.Contains("name") || header.Contains("ingredient") || header.Contains("item"))
                     columnMap["name"] = col;
                 else if (header.Contains("category") || header.Contains("type"))
@@ -119,6 +121,17 @@ namespace RecipeCostingApp.Services
                     columnMap["price"] = col;
                 else if (header.Contains("waste"))
                     columnMap["waste"] = col;
+                else
+                {
+                    // Store additional fields
+                    additionalColumns[header] = col;
+                }
+            }
+            
+            // Add additional columns to the map with "additional_" prefix
+            foreach (var kvp in additionalColumns)
+            {
+                columnMap[$"additional_{kvp.Key}"] = kvp.Value;
             }
 
             return columnMap;
@@ -128,14 +141,19 @@ namespace RecipeCostingApp.Services
         {
             var ingredient = new Ingredient();
 
+            // Parse standard fields
             if (columnMap.ContainsKey("name"))
                 ingredient.Name = worksheet.Cells[row, columnMap["name"]].Text?.Trim();
 
             if (columnMap.ContainsKey("category"))
                 ingredient.Category = worksheet.Cells[row, columnMap["category"]].Text?.Trim() ?? "General";
+            else
+                ingredient.Category = "General";
 
             if (columnMap.ContainsKey("unit"))
                 ingredient.Unit = worksheet.Cells[row, columnMap["unit"]].Text?.Trim() ?? "g";
+            else
+                ingredient.Unit = "g";
 
             if (columnMap.ContainsKey("purchaseunit"))
             {
@@ -159,6 +177,17 @@ namespace RecipeCostingApp.Services
             {
                 if (decimal.TryParse(worksheet.Cells[row, columnMap["waste"]].Text, out decimal waste))
                     ingredient.WastePercentage = waste;
+            }
+
+            // Parse additional fields
+            foreach (var kvp in columnMap.Where(c => c.Key.StartsWith("additional_")))
+            {
+                var fieldName = kvp.Key.Substring(11); // Remove "additional_" prefix
+                var cellValue = worksheet.Cells[row, kvp.Value].Text?.Trim();
+                if (!string.IsNullOrEmpty(cellValue))
+                {
+                    ingredient.AdditionalFields[fieldName] = cellValue;
+                }
             }
 
             return ingredient;

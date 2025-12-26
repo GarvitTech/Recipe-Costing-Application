@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using RecipeCostingApp.Helpers;
 using RecipeCostingApp.Services;
@@ -90,6 +91,11 @@ namespace RecipeCostingApp.Models
 
         public DateTime CreatedDate { get; set; } = DateTime.Now;
         public DateTime ModifiedDate { get; set; } = DateTime.Now;
+        
+        // Additional fields from import
+        public Dictionary<string, string> AdditionalFields { get; set; } = new Dictionary<string, string>();
+        
+        public string AdditionalFieldsIndicator => AdditionalFields.Any() ? "📋" : "";
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged(string propertyName)

@@ -1,10 +1,16 @@
 # Import Feature Documentation
 
 ## Overview
-The Item Master now supports importing ingredients from multiple file formats:
+The Item Master supports importing ingredients from multiple file formats with **case-insensitive** field matching:
 - **Excel Files** (.xlsx, .xls)
-- **PDF Files** (.pdf)
+- **PDF Files** (.pdf) 
 - **Image Files** (.jpg, .png, .bmp) - Basic support
+
+## Key Features
+- **Case-insensitive field matching** - "Name", "name", "NAME" all work
+- **Additional fields support** - Extra columns are preserved and can be viewed/deleted
+- **Duplicate detection** - Automatically skips existing ingredients
+- **Preview before import** - Review what will be imported
 
 ## Excel Import Format
 
@@ -18,11 +24,12 @@ The Item Master now supports importing ingredients from multiple file formats:
 
 ### Example Excel Format:
 ```
-Name          | Category   | Unit | Purchase Unit | Price | Waste
-Tomatoes      | Vegetables | g    | 1000         | 50.00 | 5
-Chicken Breast| Meat       | g    | 1000         | 180.00| 2
-Olive Oil     | Oils       | ml   | 500          | 120.00| 0
+Name          | Category   | Unit | Purchase Unit | Price | Waste | Supplier    | Notes
+Tomatoes      | Vegetables | g    | 1000         | 50.00 | 5     | Local Farm  | Organic
+Chicken Breast| Meat       | g    | 1000         | 180.00| 2     | ABC Meats   | Fresh
+Olive Oil     | Oils       | ml   | 500          | 120.00| 0     | Oil Co      | Extra Virgin
 ```
+*Note: "Supplier" and "Notes" are additional fields that will be preserved*
 
 ## PDF Import Format
 
@@ -41,6 +48,14 @@ Olive Oil, Oils, 120.00
 ## Image Import
 
 Currently provides basic image processing. For full OCR functionality, additional setup would be required.
+
+## Additional Fields Management
+
+- **Automatic Detection**: Any column not matching standard fields is preserved
+- **Visual Indicator**: Ingredients with extra fields show a 📋 icon in the grid
+- **View Fields**: Click on an ingredient with extra fields to view them
+- **Delete Fields**: Option to clear additional fields when viewing them
+- **Examples**: Supplier, Notes, Barcode, Expiry Date, etc.
 
 ## Import Process
 

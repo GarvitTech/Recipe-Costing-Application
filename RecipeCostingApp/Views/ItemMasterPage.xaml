@@ -3,6 +3,10 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       Title="Item Master">
 
+    <Page.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
+    </Page.Resources>
+
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -143,6 +147,13 @@
                         <DataGridTextColumn Header="Waste %" Binding="{Binding WastePercentage, StringFormat=F1}" Width="80"/>
                         <DataGridTextColumn Header="Yield %" Binding="{Binding Yield, StringFormat=F1}" Width="80"/>
                         <DataGridTextColumn Header="Unit Cost" Binding="{Binding UnitCost, StringFormat=C4}" Width="100"/>
+                        <DataGridTemplateColumn Header="Extra" Width="50">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding AdditionalFieldsIndicator}" ToolTip="Has additional fields" HorizontalAlignment="Center"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="Actions" Width="120">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
