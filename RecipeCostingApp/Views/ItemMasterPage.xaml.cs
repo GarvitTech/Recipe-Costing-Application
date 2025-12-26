@@ -200,12 +200,6 @@ namespace RecipeCostingApp.Views
             TxtPurchaseUnit.Text = ingredient.PurchaseUnit.ToString();
             TxtPrice.Text = ingredient.Price.ToString();
             TxtWastePercentage.Text = ingredient.WastePercentage.ToString();
-            
-            // Show additional fields if any
-            if (ingredient.AdditionalFields.Any())
-            {
-                ShowAdditionalFieldsDialog(ingredient);
-            }
         }
 
         private async void BtnDelete_Click(object sender, RoutedEventArgs e)
@@ -268,14 +262,14 @@ namespace RecipeCostingApp.Views
         {
             var openFileDialog = new OpenFileDialog
             {
-                Title = "Select Excel File",
-                Filter = "Excel Files (*.xlsx;*.xls)|*.xlsx;*.xls|All Files (*.*)|*.*",
+                Title = "Select CSV File",
+                Filter = "CSV Files (*.csv)|*.csv|All Files (*.*)|*.*",
                 FilterIndex = 1
             };
 
             if (openFileDialog.ShowDialog() == true)
             {
-                await ImportFromFileAsync(openFileDialog.FileName, "Excel");
+                await ImportFromFileAsync(openFileDialog.FileName, "CSV");
             }
         }
 
@@ -321,8 +315,8 @@ namespace RecipeCostingApp.Views
 
                 switch (fileType.ToUpper())
                 {
-                    case "EXCEL":
-                        importedIngredients = await _importService.ImportFromExcelAsync(filePath);
+                    case "CSV":
+                        importedIngredients = await _importService.ImportFromCsvAsync(filePath);
                         break;
                     case "PDF":
                         importedIngredients = await _importService.ImportFromPdfAsync(filePath);
@@ -369,12 +363,7 @@ namespace RecipeCostingApp.Views
             var previewItems = ingredients.Take(10);
             foreach (var ingredient in previewItems)
             {
-                previewText += $"• {ingredient.Name} ({ingredient.Category}) - {ingredient.Price:C}";
-                if (ingredient.AdditionalFields.Any())
-                {
-                    previewText += $" [+{ingredient.AdditionalFields.Count} extra fields]";
-                }
-                previewText += "\n";
+                previewText += $"• {ingredient.Name} ({ingredient.Category}) - {ingredient.Price:C}\n";
             }
 
             if (ingredients.Count > 10)
@@ -382,49 +371,10 @@ namespace RecipeCostingApp.Views
                 previewText += $"... and {ingredients.Count - 10} more ingredients\n";
             }
 
-            // Show additional fields found
-            var allAdditionalFields = ingredients
-                .SelectMany(i => i.AdditionalFields.Keys)
-                .Distinct()
-                .ToList();
-            
-            if (allAdditionalFields.Any())
-            {
-                previewText += $"\nAdditional fields found: {string.Join(", ", allAdditionalFields)}\n";
-            }
-
             previewText += "\nDo you want to import these ingredients?\n(Duplicates will be skipped)";
 
             return MessageBox.Show(previewText, "Import Preview", 
                                  MessageBoxButton.YesNo, MessageBoxImage.Question);
-        }
-        
-        private void ShowAdditionalFieldsDialog(Ingredient ingredient)
-        {
-            if (!ingredient.AdditionalFields.Any()) return;
-            
-            var fieldsText = $"Additional fields for '{ingredient.Name}':\n\n";
-            foreach (var field in ingredient.AdditionalFields)
-            {
-                fieldsText += $"{field.Key}: {field.Value}\n";
-            }
-            fieldsText += "\nThese fields were imported from your document.\nYou can delete them by clearing the ingredient's additional data.";
-            
-            var result = MessageBox.Show(fieldsText, "Additional Fields", 
-                                       MessageBoxButton.OKCancel, MessageBoxImage.Information);
-            
-            if (result == MessageBoxResult.Cancel)
-            {
-                var clearResult = MessageBox.Show("Do you want to clear all additional fields for this ingredient?", 
-                                                 "Clear Additional Fields", 
-                                                 MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if (clearResult == MessageBoxResult.Yes)
-                {
-                    ingredient.AdditionalFields.Clear();
-                    MessageBox.Show("Additional fields cleared.", "Success", 
-                                  MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-            }
         }
     }
 }

@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using RecipeCostingApp.Data;
 using RecipeCostingApp.Models;
-using System.Text.Json;
 
 namespace RecipeCostingApp.Services
 {
@@ -66,7 +65,7 @@ namespace RecipeCostingApp.Services
                 ingredient.ModifiedDate = DateTime.Now;
                 command.Parameters.AddWithValue("@createdDate", ingredient.CreatedDate.ToString("yyyy-MM-dd HH:mm:ss"));
                 command.Parameters.AddWithValue("@modifiedDate", ingredient.ModifiedDate.ToString("yyyy-MM-dd HH:mm:ss"));
-                command.Parameters.AddWithValue("@additionalFields", JsonSerializer.Serialize(ingredient.AdditionalFields));
+                command.Parameters.AddWithValue("@additionalFields", "");
 
                 var result = await command.ExecuteScalarAsync();
                 ingredient.Id = Convert.ToInt32(result);
@@ -85,7 +84,7 @@ namespace RecipeCostingApp.Services
                 AddIngredientParameters(command, ingredient);
                 ingredient.ModifiedDate = DateTime.Now;
                 command.Parameters.AddWithValue("@modifiedDate", ingredient.ModifiedDate.ToString("yyyy-MM-dd HH:mm:ss"));
-                command.Parameters.AddWithValue("@additionalFields", JsonSerializer.Serialize(ingredient.AdditionalFields));
+                command.Parameters.AddWithValue("@additionalFields", "");
                 command.Parameters.AddWithValue("@id", ingredient.Id);
 
                 await command.ExecuteNonQueryAsync();
@@ -140,17 +139,6 @@ namespace RecipeCostingApp.Services
                 CreatedDate = DateTime.Parse(reader.GetString(9)),
                 ModifiedDate = DateTime.Parse(reader.GetString(10))
             };
-            
-            // Deserialize AdditionalFields if present
-            try
-            {
-                var additionalFieldsJson = reader.IsDBNull(8) ? "{}" : reader.GetString(8);
-                ingredient.AdditionalFields = JsonSerializer.Deserialize<Dictionary<string, string>>(additionalFieldsJson) ?? new Dictionary<string, string>();
-            }
-            catch
-            {
-                ingredient.AdditionalFields = new Dictionary<string, string>();
-            }
             
             return ingredient;
         }

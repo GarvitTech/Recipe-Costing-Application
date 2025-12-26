@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using iTextSharp.text.pdf;
-using iTextSharp.text.pdf.parser;
 using RecipeCostingApp.Models;
 using System.Text.RegularExpressions;
+using Microsoft.Win32;
 
 namespace RecipeCostingApp.Services
 {
@@ -18,31 +16,30 @@ namespace RecipeCostingApp.Services
         public ImportService()
         {
             _ingredientService = new IngredientService();
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
         }
 
         public async Task<List<Ingredient>> ImportFromExcelAsync(string filePath)
         {
+            // For now, treat Excel files as CSV
+            return await ImportFromCsvAsync(filePath);
+        }
+
+        public async Task<List<Ingredient>> ImportFromCsvAsync(string filePath)
+        {
             var ingredients = new List<Ingredient>();
-
-            using var package = new ExcelPackage(new FileInfo(filePath));
-            var worksheet = package.Workbook.Worksheets.FirstOrDefault();
+            var lines = await File.ReadAllLinesAsync(filePath);
             
-            if (worksheet == null)
-                throw new InvalidOperationException("No worksheet found in Excel file");
+            if (lines.Length < 2) return ingredients;
 
-            // Find header row
-            int headerRow = FindHeaderRow(worksheet);
-            if (headerRow == -1)
-                throw new InvalidOperationException("Could not find valid headers in Excel file");
+            var headers = ParseCsvLine(lines[0]);
+            var columnMap = MapColumns(headers);
 
-            var columnMap = MapColumns(worksheet, headerRow);
-
-            for (int row = headerRow + 1; row <= worksheet.Dimension.End.Row; row++)
+            for (int i = 1; i < lines.Length; i++)
             {
                 try
                 {
-                    var ingredient = ParseIngredientFromRow(worksheet, row, columnMap);
+                    var values = ParseCsvLine(lines[i]);
+                    var ingredient = ParseIngredientFromValues(values, columnMap, headers);
                     if (ingredient != null && !string.IsNullOrWhiteSpace(ingredient.Name))
                     {
                         ingredients.Add(ingredient);
@@ -50,8 +47,7 @@ namespace RecipeCostingApp.Services
                 }
                 catch (Exception ex)
                 {
-                    // Log error but continue processing other rows
-                    Console.WriteLine($"Error processing row {row}: {ex.Message}");
+                    Console.WriteLine($"Error processing row {i + 1}: {ex.Message}");
                 }
             }
 
@@ -61,18 +57,25 @@ namespace RecipeCostingApp.Services
         public async Task<List<Ingredient>> ImportFromPdfAsync(string filePath)
         {
             var ingredients = new List<Ingredient>();
-            var text = ExtractTextFromPdf(filePath);
             
-            // Parse ingredients from text using patterns
-            var lines = text.Split('\n', StringSplitOptions.RemoveEmptyEntries);
-            
-            foreach (var line in lines)
+            // Simple text file reading for now
+            try
             {
-                var ingredient = ParseIngredientFromText(line.Trim());
-                if (ingredient != null && !string.IsNullOrWhiteSpace(ingredient.Name))
+                var text = await File.ReadAllTextAsync(filePath);
+                var lines = text.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+                
+                foreach (var line in lines)
                 {
-                    ingredients.Add(ingredient);
+                    var ingredient = ParseIngredientFromText(line.Trim());
+                    if (ingredient != null && !string.IsNullOrWhiteSpace(ingredient.Name))
+                    {
+                        ingredients.Add(ingredient);
+                    }
                 }
+            }
+            catch
+            {
+                throw new InvalidOperationException("Could not read PDF file. Please convert to text format first.");
             }
 
             return ingredients;
@@ -80,55 +83,64 @@ namespace RecipeCostingApp.Services
 
         public async Task<string> ProcessImageAsync(string imagePath)
         {
-            // For now, return the image path as a reference
-            // In a full implementation, you could use OCR libraries like Tesseract
             return $"Image processed: {Path.GetFileName(imagePath)}";
         }
 
-        private int FindHeaderRow(ExcelWorksheet worksheet)
+        private string[] ParseCsvLine(string line)
         {
-            for (int row = 1; row <= Math.Min(5, worksheet.Dimension.End.Row); row++)
+            var result = new List<string>();
+            bool inQuotes = false;
+            string currentField = "";
+
+            for (int i = 0; i < line.Length; i++)
             {
-                var firstCell = worksheet.Cells[row, 1].Text?.ToLower();
-                if (firstCell != null && (firstCell.Contains("name") || firstCell.Contains("ingredient") || firstCell.Contains("item")))
+                char c = line[i];
+                if (c == '"')
                 {
-                    return row;
+                    inQuotes = !inQuotes;
+                }
+                else if (c == ',' && !inQuotes)
+                {
+                    result.Add(currentField.Trim());
+                    currentField = "";
+                }
+                else
+                {
+                    currentField += c;
                 }
             }
-            return 1; // Default to first row
+            result.Add(currentField.Trim());
+            return result.ToArray();
         }
 
-        private Dictionary<string, int> MapColumns(ExcelWorksheet worksheet, int headerRow)
+        private Dictionary<string, int> MapColumns(string[] headers)
         {
             var columnMap = new Dictionary<string, int>();
             var additionalColumns = new Dictionary<string, int>();
             
-            for (int col = 1; col <= worksheet.Dimension.End.Column; col++)
+            for (int i = 0; i < headers.Length; i++)
             {
-                var header = worksheet.Cells[headerRow, col].Text?.ToLower().Trim();
+                var header = headers[i].ToLower().Trim();
                 if (string.IsNullOrEmpty(header)) continue;
 
-                // Map known fields (case-insensitive)
                 if (header.Contains("name") || header.Contains("ingredient") || header.Contains("item"))
-                    columnMap["name"] = col;
+                    columnMap["name"] = i;
                 else if (header.Contains("category") || header.Contains("type"))
-                    columnMap["category"] = col;
+                    columnMap["category"] = i;
                 else if (header.Contains("unit") && !header.Contains("purchase"))
-                    columnMap["unit"] = col;
+                    columnMap["unit"] = i;
                 else if (header.Contains("purchase") && header.Contains("unit"))
-                    columnMap["purchaseunit"] = col;
+                    columnMap["purchaseunit"] = i;
                 else if (header.Contains("price") || header.Contains("cost"))
-                    columnMap["price"] = col;
+                    columnMap["price"] = i;
                 else if (header.Contains("waste"))
-                    columnMap["waste"] = col;
+                    columnMap["waste"] = i;
                 else
                 {
-                    // Store additional fields
-                    additionalColumns[header] = col;
+                    additionalColumns[header] = i;
                 }
             }
             
-            // Add additional columns to the map with "additional_" prefix
             foreach (var kvp in additionalColumns)
             {
                 columnMap[$"additional_{kvp.Key}"] = kvp.Value;
@@ -137,27 +149,26 @@ namespace RecipeCostingApp.Services
             return columnMap;
         }
 
-        private Ingredient ParseIngredientFromRow(ExcelWorksheet worksheet, int row, Dictionary<string, int> columnMap)
+        private Ingredient ParseIngredientFromValues(string[] values, Dictionary<string, int> columnMap, string[] headers)
         {
             var ingredient = new Ingredient();
 
-            // Parse standard fields
-            if (columnMap.ContainsKey("name"))
-                ingredient.Name = worksheet.Cells[row, columnMap["name"]].Text?.Trim();
+            if (columnMap.ContainsKey("name") && columnMap["name"] < values.Length)
+                ingredient.Name = values[columnMap["name"]]?.Trim();
 
-            if (columnMap.ContainsKey("category"))
-                ingredient.Category = worksheet.Cells[row, columnMap["category"]].Text?.Trim() ?? "General";
+            if (columnMap.ContainsKey("category") && columnMap["category"] < values.Length)
+                ingredient.Category = values[columnMap["category"]]?.Trim() ?? "General";
             else
                 ingredient.Category = "General";
 
-            if (columnMap.ContainsKey("unit"))
-                ingredient.Unit = worksheet.Cells[row, columnMap["unit"]].Text?.Trim() ?? "g";
+            if (columnMap.ContainsKey("unit") && columnMap["unit"] < values.Length)
+                ingredient.Unit = values[columnMap["unit"]]?.Trim() ?? "g";
             else
                 ingredient.Unit = "g";
 
-            if (columnMap.ContainsKey("purchaseunit"))
+            if (columnMap.ContainsKey("purchaseunit") && columnMap["purchaseunit"] < values.Length)
             {
-                if (decimal.TryParse(worksheet.Cells[row, columnMap["purchaseunit"]].Text, out decimal purchaseUnit))
+                if (decimal.TryParse(values[columnMap["purchaseunit"]], out decimal purchaseUnit))
                     ingredient.PurchaseUnit = purchaseUnit;
                 else
                     ingredient.PurchaseUnit = 1000;
@@ -167,46 +178,36 @@ namespace RecipeCostingApp.Services
                 ingredient.PurchaseUnit = 1000;
             }
 
-            if (columnMap.ContainsKey("price"))
+            if (columnMap.ContainsKey("price") && columnMap["price"] < values.Length)
             {
-                if (decimal.TryParse(worksheet.Cells[row, columnMap["price"]].Text, out decimal price))
+                if (decimal.TryParse(values[columnMap["price"]], out decimal price))
                     ingredient.Price = price;
             }
 
-            if (columnMap.ContainsKey("waste"))
+            if (columnMap.ContainsKey("waste") && columnMap["waste"] < values.Length)
             {
-                if (decimal.TryParse(worksheet.Cells[row, columnMap["waste"]].Text, out decimal waste))
+                if (decimal.TryParse(values[columnMap["waste"]], out decimal waste))
                     ingredient.WastePercentage = waste;
             }
 
-            // Parse additional fields
-            foreach (var kvp in columnMap.Where(c => c.Key.StartsWith("additional_")))
-            {
-                var fieldName = kvp.Key.Substring(11); // Remove "additional_" prefix
-                var cellValue = worksheet.Cells[row, kvp.Value].Text?.Trim();
-                if (!string.IsNullOrEmpty(cellValue))
-                {
-                    ingredient.AdditionalFields[fieldName] = cellValue;
-                }
-            }
+            // Parse additional fields - skip for now
+            // foreach (var kvp in columnMap.Where(c => c.Key.StartsWith("additional_")))
+            // {
+            //     var fieldName = kvp.Key.Substring(11);
+            //     if (kvp.Value < values.Length)
+            //     {
+            //         var cellValue = values[kvp.Value]?.Trim();
+            //         if (!string.IsNullOrEmpty(cellValue))
+            //         {
+            //             ingredient.AdditionalFields[fieldName] = cellValue;
+            //         }
+            //     }
+            // }
 
             return ingredient;
         }
 
-        private string ExtractTextFromPdf(string filePath)
-        {
-            var text = "";
-            
-            using var reader = new PdfReader(filePath);
-            for (int page = 1; page <= reader.NumberOfPages; page++)
-            {
-                text += PdfTextExtractor.GetTextFromPage(reader, page);
-            }
-            
-            return text;
-        }
-
-        private Ingredient ParseIngredientFromText(string line)
+private Ingredient ParseIngredientFromText(string line)
         {
             // Simple pattern matching for ingredient data
             // Format: "Name - Category - Price - Unit"
