@@ -1,0 +1,82 @@
+<Page x:Class="RecipeCostingApp.Views.MenuEngineeringPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Menu Engineering">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Label Grid.Row="0" Content="🎯 Menu Engineering Dashboard" Style="{StaticResource SectionHeader}" FontSize="24"/>
+
+        <Border Grid.Row="1" Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" 
+                BorderThickness="1" CornerRadius="5" Padding="20" Margin="0,0,0,20">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Strategic menu management and profitability analysis" FontSize="14" VerticalAlignment="Center"/>
+                <Button Name="BtnRefreshMenu" Content="🔄 Refresh" Style="{StaticResource PrimaryButton}" 
+                       Margin="20,0,0,0" Click="BtnRefreshMenu_Click"/>
+                <Button Name="BtnExportMenu" Content="📄 Export" Style="{StaticResource PrimaryButton}" 
+                       Margin="10,0,0,0" Click="BtnExportMenu_Click"/>
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="2" Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" 
+                BorderThickness="1" CornerRadius="5">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Label Grid.Row="0" Content="Menu Performance Matrix" Style="{StaticResource SectionHeader}" Margin="15,15,15,0"/>
+                
+                <DataGrid Grid.Row="1" Name="DgMenuEngineering" Style="{StaticResource ModernDataGrid}" Margin="15">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Recipe" Binding="{Binding Name}" Width="200"/>
+                        <DataGridTextColumn Header="Category" Binding="{Binding Category}" Width="120"/>
+                        <DataGridTextColumn Header="Recipe Cost" Binding="{Binding RecipeCost, StringFormat=C2}" Width="100"/>
+                        <DataGridTextColumn Header="Final Cost" Binding="{Binding FinalCost, StringFormat=C2}" Width="100"/>
+                        <DataGridTextColumn Header="Selling Price" Binding="{Binding SellingPrice, StringFormat=C2}" Width="100"/>
+                        <DataGridTextColumn Header="Profit" Binding="{Binding Profit, StringFormat=C2}" Width="80"/>
+                        <DataGridTextColumn Header="Cost %" Binding="{Binding CostPercentage, StringFormat=F1}" Width="70"/>
+                        <DataGridTextColumn Header="Margin %" Binding="{Binding GrossMargin, StringFormat=F1}" Width="80"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <Border Grid.Row="2" Background="{StaticResource CalculatedBrush}" Padding="15">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="⭐ High Profit" FontWeight="Bold" Foreground="Green"/>
+                            <TextBlock Name="TxtHighProfitCount" Text="0 items" FontSize="12"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="🟡 Medium Profit" FontWeight="Bold" Foreground="Orange"/>
+                            <TextBlock Name="TxtMediumProfitCount" Text="0 items" FontSize="12"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="🔴 Low Profit" FontWeight="Bold" Foreground="Red"/>
+                            <TextBlock Name="TxtLowProfitCount" Text="0 items" FontSize="12"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="3">
+                            <TextBlock Text="📊 Total Items" FontWeight="Bold"/>
+                            <TextBlock Name="TxtTotalCount" Text="0 items" FontSize="12"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
+</Page>

@@ -1,0 +1,13 @@
+# Icon Placeholder
+# 
+# This is a placeholder for the application icon.
+# In a production build, replace this with a proper .ico file
+# 
+# Suggested icon: Chef hat or cooking utensils with calculator/chart elements
+# Size: 256x256 pixels minimum
+# Format: .ico (Windows icon format)
+#
+# Icon should represent:
+# - Food/cooking (chef hat, utensils)
+# - Cost management (calculator, chart, money)
+# - Professional software (clean, modern design)

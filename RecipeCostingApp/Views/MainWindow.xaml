@@ -1,0 +1,88 @@
+<Window x:Class="RecipeCostingApp.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Professional Recipe Costing &amp; Menu Engineering" 
+        Height="800" Width="1200"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource BackgroundBrush}">
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="{StaticResource PrimaryBrush}" Padding="20,15">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Professional Recipe Costing &amp; Menu Engineering" 
+                          FontSize="20" FontWeight="Bold" Foreground="White" VerticalAlignment="Center"/>
+                <TextBlock Text="v1.0" FontSize="12" Foreground="LightGray" 
+                          VerticalAlignment="Bottom" Margin="10,0,0,2"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Main Content -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Navigation Panel -->
+            <Border Grid.Column="0" Background="{StaticResource SurfaceBrush}" 
+                    BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,1,0">
+                <StackPanel Margin="10">
+                    <Label Content="MODULES" Style="{StaticResource SectionHeader}"/>
+                    
+                    <Button Name="BtnItemMaster" Content="📦 Item Master" 
+                            Style="{StaticResource PrimaryButton}" Margin="0,5" 
+                            HorizontalAlignment="Stretch" Click="BtnItemMaster_Click"/>
+                    
+                    <Button Name="BtnRecipes" Content="📋 Recipes" 
+                            Style="{StaticResource PrimaryButton}" Margin="0,5" 
+                            HorizontalAlignment="Stretch" Click="BtnRecipes_Click"/>
+                    
+                    <Button Name="BtnCosting" Content="💰 Costing Analysis" 
+                            Style="{StaticResource PrimaryButton}" Margin="0,5" 
+                            HorizontalAlignment="Stretch" Click="BtnCosting_Click"/>
+                    
+                    <Button Name="BtnBulkCosting" Content="📊 Bulk Costing" 
+                            Style="{StaticResource PrimaryButton}" Margin="0,5" 
+                            HorizontalAlignment="Stretch" Click="BtnBulkCosting_Click"/>
+                    
+                    <Button Name="BtnMenuEngineering" Content="🎯 Menu Engineering" 
+                            Style="{StaticResource PrimaryButton}" Margin="0,5" 
+                            HorizontalAlignment="Stretch" Click="BtnMenuEngineering_Click"/>
+
+                    <Separator Margin="0,20"/>
+                    
+                    <Label Content="TOOLS" Style="{StaticResource SectionHeader}"/>
+                    
+                    <Button Name="BtnBackup" Content="💾 Backup Data" 
+                            Style="{StaticResource PrimaryButton}" Margin="0,5" 
+                            HorizontalAlignment="Stretch" Click="BtnBackup_Click"/>
+                    
+                    <Button Name="BtnSettings" Content="⚙️ Settings" 
+                            Style="{StaticResource PrimaryButton}" Margin="0,5" 
+                            HorizontalAlignment="Stretch" Click="BtnSettings_Click"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Content Area -->
+            <Border Grid.Column="1" Background="{StaticResource SurfaceBrush}" Margin="10">
+                <Frame Name="MainFrame" NavigationUIVisibility="Hidden"/>
+            </Border>
+        </Grid>
+
+        <!-- Status Bar -->
+        <Border Grid.Row="2" Background="{StaticResource BorderBrush}" Padding="10,5">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Name="StatusText" Text="Ready" VerticalAlignment="Center"/>
+                <TextBlock Text=" | " Margin="10,0" VerticalAlignment="Center"/>
+                <TextBlock Name="DatabaseStatus" Text="Database: Connected" VerticalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

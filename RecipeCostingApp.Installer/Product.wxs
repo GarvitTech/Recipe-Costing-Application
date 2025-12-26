@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" Name="Professional Recipe Costing &amp; Menu Engineering" Language="1033" Version="1.0.0.0" 
+           Manufacturer="Garvit Tech" UpgradeCode="12345678-1234-1234-1234-123456789012">
+    
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+    
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    
+    <MediaTemplate EmbedCab="yes" />
+    
+    <Feature Id="ProductFeature" Title="Recipe Costing Application" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+      <ComponentRef Id="ApplicationShortcut" />
+      <ComponentRef Id="DesktopShortcut" />
+    </Feature>
+    
+    <!-- Directory Structure -->
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLFOLDER" Name="Recipe Costing App" />
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ApplicationProgramsFolder" Name="Recipe Costing App" />
+      </Directory>
+      <Directory Id="DesktopFolder" Name="Desktop" />
+    </Directory>
+    
+    <!-- Application Files -->
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+      <Component Id="MainExecutable" Guid="*">
+        <File Id="RecipeCostingAppExe" Source="..\RecipeCostingApp\publish\RecipeCostingApp.exe" KeyPath="yes" />
+      </Component>
+      <Component Id="SQLiteInterop" Guid="*">
+        <File Id="SQLiteInteropDll" Source="..\RecipeCostingApp\publish\SQLite.Interop.dll" />
+      </Component>
+      <Component Id="SQLiteNative" Guid="*">
+        <File Id="SQLiteNativeDll" Source="..\RecipeCostingApp\publish\e_sqlite3.dll" />
+      </Component>
+      <Component Id="PresentationNative" Guid="*">
+        <File Id="PresentationNativeDll" Source="..\RecipeCostingApp\publish\PresentationNative_cor3.dll" />
+      </Component>
+      <Component Id="WpfGfx" Guid="*">
+        <File Id="WpfGfxDll" Source="..\RecipeCostingApp\publish\wpfgfx_cor3.dll" />
+      </Component>
+      <Component Id="D3DCompiler" Guid="*">
+        <File Id="D3DCompilerDll" Source="..\RecipeCostingApp\publish\D3DCompiler_47_cor3.dll" />
+      </Component>
+      <Component Id="PenImc" Guid="*">
+        <File Id="PenImcDll" Source="..\RecipeCostingApp\publish\PenImc_cor3.dll" />
+      </Component>
+      <Component Id="VCRuntime" Guid="*">
+        <File Id="VCRuntimeDll" Source="..\RecipeCostingApp\publish\vcruntime140_cor3.dll" />
+      </Component>
+      <Component Id="SniDll" Guid="*">
+        <File Id="SniDllFile" Source="..\RecipeCostingApp\publish\sni.dll" />
+      </Component>
+    </ComponentGroup>
+    
+    <!-- Start Menu Shortcut -->
+    <Component Id="ApplicationShortcut" Directory="ApplicationProgramsFolder" Guid="*">
+      <Shortcut Id="ApplicationStartMenuShortcut" Name="Recipe Costing App" 
+                Description="Professional Recipe Costing &amp; Menu Engineering" 
+                Target="[#RecipeCostingAppExe]" WorkingDirectory="INSTALLFOLDER" />
+      <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall" />
+      <RegistryValue Root="HKCU" Key="Software\GarvitTech\RecipeCostingApp" 
+                     Name="installed" Type="integer" Value="1" KeyPath="yes" />
+    </Component>
+    
+    <!-- Desktop Shortcut -->
+    <Component Id="DesktopShortcut" Directory="DesktopFolder" Guid="*">
+      <Shortcut Id="ApplicationDesktopShortcut" Name="Recipe Costing App" 
+                Description="Professional Recipe Costing &amp; Menu Engineering" 
+                Target="[#RecipeCostingAppExe]" WorkingDirectory="INSTALLFOLDER" />
+      <RegistryValue Root="HKCU" Key="Software\GarvitTech\RecipeCostingApp" 
+                     Name="desktop" Type="integer" Value="1" KeyPath="yes" />
+    </Component>
+    
+  </Product>
+</Wix>

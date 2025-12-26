@@ -1,0 +1,95 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Color Definitions -->
+    <SolidColorBrush x:Key="PrimaryBrush" Color="#2E86AB"/>
+    <SolidColorBrush x:Key="SecondaryBrush" Color="#A23B72"/>
+    <SolidColorBrush x:Key="AccentBrush" Color="#F18F01"/>
+    <SolidColorBrush x:Key="BackgroundBrush" Color="#F5F5F5"/>
+    <SolidColorBrush x:Key="SurfaceBrush" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="InputBrush" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="CalculatedBrush" Color="#E8F4FD"/>
+    <SolidColorBrush x:Key="BorderBrush" Color="#DDDDDD"/>
+
+    <!-- Button Styles -->
+    <Style x:Key="PrimaryButton" TargetType="Button">
+        <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="15,8"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}" 
+                            CornerRadius="4" 
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#1E5F7A"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- TextBox Styles -->
+    <Style x:Key="InputTextBox" TargetType="TextBox">
+        <Setter Property="Background" Value="{StaticResource InputBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="8,6"/>
+        <Setter Property="FontSize" Value="14"/>
+    </Style>
+
+    <Style x:Key="CalculatedTextBox" TargetType="TextBox" BasedOn="{StaticResource InputTextBox}">
+        <Setter Property="Background" Value="{StaticResource CalculatedBrush}"/>
+        <Setter Property="IsReadOnly" Value="True"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+    </Style>
+
+    <!-- ComboBox Style -->
+    <Style x:Key="InputComboBox" TargetType="ComboBox">
+        <Setter Property="Background" Value="{StaticResource InputBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="8,6"/>
+        <Setter Property="FontSize" Value="14"/>
+    </Style>
+
+    <!-- DataGrid Style -->
+    <Style x:Key="ModernDataGrid" TargetType="DataGrid">
+        <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+        <Setter Property="HorizontalGridLinesBrush" Value="{StaticResource BorderBrush}"/>
+        <Setter Property="AlternatingRowBackground" Value="#F9F9F9"/>
+        <Setter Property="RowHeight" Value="35"/>
+        <Setter Property="HeadersVisibility" Value="Column"/>
+        <Setter Property="AutoGenerateColumns" Value="False"/>
+        <Setter Property="CanUserAddRows" Value="False"/>
+        <Setter Property="CanUserDeleteRows" Value="False"/>
+        <Setter Property="SelectionMode" Value="Single"/>
+    </Style>
+
+    <!-- Label Styles -->
+    <Style x:Key="SectionHeader" TargetType="Label">
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}"/>
+        <Setter Property="Margin" Value="0,10,0,5"/>
+    </Style>
+
+    <Style x:Key="FieldLabel" TargetType="Label">
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="0,0,10,0"/>
+    </Style>
+
+</ResourceDictionary>

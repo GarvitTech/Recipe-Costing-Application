@@ -1,0 +1,19 @@
+Professional Recipe Costing & Menu Engineering Application
+
+Copyright (c) 2024 Garvit Tech
+
+This software is provided "as is" without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement.
+
+Permission is hereby granted to use this software for commercial and non-commercial purposes.
+
+The software includes the following features:
+- Complete ingredient database management
+- Real-time recipe costing calculations
+- Professional PDF report generation
+- Bulk costing for events and catering
+- Menu engineering analysis
+- Database backup and restore functionality
+- Global currency management
+- Complete database clearing functionality
+
+By installing this software, you agree to these terms and conditions.

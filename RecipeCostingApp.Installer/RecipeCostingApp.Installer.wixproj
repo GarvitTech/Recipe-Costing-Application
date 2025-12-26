@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WixToolset.Sdk" Version="4.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Product.wxs" />
+  </ItemGroup>
+
+</Project>
