@@ -263,7 +263,7 @@ namespace RecipeCostingApp.Views
             var openFileDialog = new OpenFileDialog
             {
                 Title = "Select CSV File",
-                Filter = "CSV Files (*.csv)|*.csv|All Files (*.*)|*.*",
+                Filter = "CSV Files (*.csv)|*.csv|Text Files (*.txt)|*.txt|All Files (*.*)|*.*",
                 FilterIndex = 1
             };
 
@@ -273,71 +273,23 @@ namespace RecipeCostingApp.Views
             }
         }
 
-        private async void BtnImportPdf_Click(object sender, RoutedEventArgs e)
-        {
-            var openFileDialog = new OpenFileDialog
-            {
-                Title = "Select PDF File",
-                Filter = "PDF Files (*.pdf)|*.pdf|All Files (*.*)|*.*",
-                FilterIndex = 1
-            };
-
-            if (openFileDialog.ShowDialog() == true)
-            {
-                await ImportFromFileAsync(openFileDialog.FileName, "PDF");
-            }
-        }
-
-        private async void BtnImportImage_Click(object sender, RoutedEventArgs e)
-        {
-            var openFileDialog = new OpenFileDialog
-            {
-                Title = "Select Image File",
-                Filter = "Image Files (*.jpg;*.jpeg;*.png;*.bmp)|*.jpg;*.jpeg;*.png;*.bmp|All Files (*.*)|*.*",
-                FilterIndex = 1
-            };
-
-            if (openFileDialog.ShowDialog() == true)
-            {
-                await ImportFromFileAsync(openFileDialog.FileName, "Image");
-            }
-        }
-
         private async Task ImportFromFileAsync(string filePath, string fileType)
         {
             try
             {
-                // Show loading indicator
-                var originalCursor = this.Cursor;
                 this.Cursor = System.Windows.Input.Cursors.Wait;
 
-                List<Ingredient> importedIngredients = new List<Ingredient>();
+                var importedIngredients = await _importService.ImportFromCsvAsync(filePath);
 
-                switch (fileType.ToUpper())
-                {
-                    case "CSV":
-                        importedIngredients = await _importService.ImportFromCsvAsync(filePath);
-                        break;
-                    case "PDF":
-                        importedIngredients = await _importService.ImportFromPdfAsync(filePath);
-                        break;
-                    case "IMAGE":
-                        var result = await _importService.ProcessImageAsync(filePath);
-                        MessageBox.Show($"Image processing result: {result}\n\nNote: OCR functionality requires additional setup. For now, please manually enter ingredients from the image.", 
-                                      "Image Import", MessageBoxButton.OK, MessageBoxImage.Information);
-                        return;
-                }
-
-                this.Cursor = originalCursor;
+                this.Cursor = System.Windows.Input.Cursors.Arrow;
 
                 if (importedIngredients.Count == 0)
                 {
-                    MessageBox.Show($"No ingredients found in the {fileType} file. Please check the file format and try again.", 
+                    MessageBox.Show($"No ingredients found in the file. Please check the file format and try again.", 
                                   "Import Result", MessageBoxButton.OK, MessageBoxImage.Information);
                     return;
                 }
 
-                // Show preview dialog
                 var previewResult = ShowImportPreview(importedIngredients, fileType);
                 if (previewResult == MessageBoxResult.Yes)
                 {
@@ -350,7 +302,7 @@ namespace RecipeCostingApp.Views
             catch (Exception ex)
             {
                 this.Cursor = System.Windows.Input.Cursors.Arrow;
-                MessageBox.Show($"Error importing from {fileType}: {ex.Message}", "Import Error", 
+                MessageBox.Show($"Error importing file: {ex.Message}", "Import Error", 
                               MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }

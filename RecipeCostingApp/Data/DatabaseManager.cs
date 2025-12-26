@@ -28,7 +28,6 @@ namespace RecipeCostingApp.Data
             connection.Open();
 
             CreateTables(connection);
-            UpdateSchema(connection);
             SeedDefaultData(connection);
         }
 
@@ -44,7 +43,6 @@ namespace RecipeCostingApp.Data
                     Price DECIMAL NOT NULL,
                     WastePercentage DECIMAL DEFAULT 0,
                     Yield DECIMAL DEFAULT 100,
-                    AdditionalFields TEXT DEFAULT '{}',
                     CreatedDate TEXT NOT NULL,
                     ModifiedDate TEXT NOT NULL
                 );
@@ -77,40 +75,6 @@ namespace RecipeCostingApp.Data
 
             using var command = new SqliteCommand(createTablesScript, connection);
             command.ExecuteNonQuery();
-        }
-
-        private static void UpdateSchema(SqliteConnection connection)
-        {
-            // Add AdditionalFields column if it doesn't exist
-            try
-            {
-                var checkColumnScript = "PRAGMA table_info(Ingredients)";
-                using var checkCommand = new SqliteCommand(checkColumnScript, connection);
-                using var reader = checkCommand.ExecuteReader();
-                
-                bool hasAdditionalFields = false;
-                while (reader.Read())
-                {
-                    if (reader.GetString(1) == "AdditionalFields")
-                    {
-                        hasAdditionalFields = true;
-                        break;
-                    }
-                }
-                reader.Close();
-                
-                if (!hasAdditionalFields)
-                {
-                    var addColumnScript = "ALTER TABLE Ingredients ADD COLUMN AdditionalFields TEXT DEFAULT '{}'";
-                    using var addCommand = new SqliteCommand(addColumnScript, connection);
-                    addCommand.ExecuteNonQuery();
-                }
-            }
-            catch (Exception ex)
-            {
-                // Log error but don't fail initialization
-                Console.WriteLine($"Error updating schema: {ex.Message}");
-            }
         }
 
         private static void SeedDefaultData(SqliteConnection connection)

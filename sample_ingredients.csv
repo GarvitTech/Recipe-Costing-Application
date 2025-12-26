@@ -1,6 +1,11 @@
-Name,Category,Unit,Purchase Unit,Price,Waste,Supplier,Notes
-Tomatoes,Vegetables,g,1000,50.00,5,Local Farm,Organic
-Chicken Breast,Meat,g,1000,180.00,2,ABC Meats,Fresh
-Olive Oil,Oils,ml,500,120.00,0,Oil Co,Extra Virgin
-Onions,Vegetables,g,1000,30.00,10,Farm Direct,Yellow
-Rice,Grains,g,1000,80.00,1,Rice Mill,Basmati
+Name,Category,Unit,Purchase Unit,Price,Waste
+Tomatoes,Vegetables,g,1000,50.00,5
+Chicken Breast,Meat,g,1000,180.00,2
+Olive Oil,Oils,ml,500,120.00,0
+Onions,Vegetables,g,1000,30.00,10
+Rice,Grains,g,1000,80.00,1
+Salt,Spices,g,1000,20.00,0
+Black Pepper,Spices,g,100,150.00,0
+Milk,Dairy,ml,1000,60.00,0
+Butter,Dairy,g,500,200.00,0
+Flour,Dry Store,g,1000,40.00,2

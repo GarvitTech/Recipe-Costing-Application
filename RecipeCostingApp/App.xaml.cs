@@ -10,8 +10,17 @@ namespace RecipeCostingApp
         {
             base.OnStartup(e);
             
-            // Initialize database
-            DatabaseManager.InitializeDatabase();
+            try
+            {
+                // Initialize database
+                DatabaseManager.InitializeDatabase();
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show($"Database initialization error: {ex.Message}", "Startup Error", 
+                              MessageBoxButton.OK, MessageBoxImage.Error);
+                Shutdown();
+            }
         }
     }
 }

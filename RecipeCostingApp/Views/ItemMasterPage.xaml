@@ -120,12 +120,6 @@
                             <Button Name="BtnImportExcel" Content="📊 Import CSV" Style="{StaticResource PrimaryButton}" 
                                    Margin="10,0,0,0" Click="BtnImportExcel_Click" 
                                    ToolTip="Import ingredients from CSV file (.csv)"/>
-                            <Button Name="BtnImportPdf" Content="📄 Import PDF" Style="{StaticResource PrimaryButton}" 
-                                   Margin="10,0,0,0" Click="BtnImportPdf_Click" 
-                                   ToolTip="Import ingredients from PDF file"/>
-                            <Button Name="BtnImportImage" Content="🖼️ Import Image" Style="{StaticResource PrimaryButton}" 
-                                   Margin="10,0,0,0" Click="BtnImportImage_Click" 
-                                   ToolTip="Import ingredients from image file (jpg, png, bmp)"/>
                         </StackPanel>
                     </Grid>
                 </Border>

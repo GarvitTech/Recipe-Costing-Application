@@ -1,18 +1,17 @@
 # Import Feature Documentation
 
 ## Overview
-The Item Master supports importing ingredients from multiple file formats with **case-insensitive** field matching:
-- **Excel Files** (.xlsx, .xls)
-- **PDF Files** (.pdf) 
-- **Image Files** (.jpg, .png, .bmp) - Basic support
+The Item Master supports importing ingredients from CSV files with **case-insensitive** field matching:
+- **CSV Files** (.csv) - Full support
+- **Text Files** (.txt) - Basic support
 
 ## Key Features
 - **Case-insensitive field matching** - "Name", "name", "NAME" all work
-- **Additional fields support** - Extra columns are preserved and can be viewed/deleted
 - **Duplicate detection** - Automatically skips existing ingredients
 - **Preview before import** - Review what will be imported
+- **Error handling** - Continues processing even if some rows fail
 
-## Excel Import Format
+## CSV Import Format
 
 ### Expected Column Headers (case-insensitive):
 - **Name** or **Ingredient** or **Item** - Required
@@ -22,71 +21,41 @@ The Item Master supports importing ingredients from multiple file formats with *
 - **Price** or **Cost** - Optional (defaults to 0)
 - **Waste** - Optional (defaults to 0)
 
-### Example Excel Format:
+### Example CSV Format:
+```csv
+Name,Category,Unit,Purchase Unit,Price,Waste
+Tomatoes,Vegetables,g,1000,50.00,5
+Chicken Breast,Meat,g,1000,180.00,2
+Olive Oil,Oils,ml,500,120.00,0
+Onions,Vegetables,g,1000,30.00,10
+Rice,Grains,g,1000,80.00,1
 ```
-Name          | Category   | Unit | Purchase Unit | Price | Waste | Supplier    | Notes
-Tomatoes      | Vegetables | g    | 1000         | 50.00 | 5     | Local Farm  | Organic
-Chicken Breast| Meat       | g    | 1000         | 180.00| 2     | ABC Meats   | Fresh
-Olive Oil     | Oils       | ml   | 500          | 120.00| 0     | Oil Co      | Extra Virgin
-```
-*Note: "Supplier" and "Notes" are additional fields that will be preserved*
-
-## PDF Import Format
-
-The system will attempt to parse ingredient data from PDF text using common patterns:
-- `Name - Category - Price - Unit`
-- `Name Price Unit`
-- `Name, Category, Price`
-
-### Example PDF Content:
-```
-Tomatoes - Vegetables - 50.00 - g
-Chicken Breast 180.00 g
-Olive Oil, Oils, 120.00
-```
-
-## Image Import
-
-Currently provides basic image processing. For full OCR functionality, additional setup would be required.
-
-## Additional Fields Management
-
-- **Automatic Detection**: Any column not matching standard fields is preserved
-- **Visual Indicator**: Ingredients with extra fields show a 📋 icon in the grid
-- **View Fields**: Click on an ingredient with extra fields to view them
-- **Delete Fields**: Option to clear additional fields when viewing them
-- **Examples**: Supplier, Notes, Barcode, Expiry Date, etc.
 
 ## Import Process
 
-1. Click the appropriate import button (Excel, PDF, or Image)
-2. Select your file using the file dialog
+1. Click **"📊 Import CSV"** button
+2. Select your CSV file using the file dialog
 3. Review the preview of found ingredients
 4. Confirm to import (duplicates are automatically skipped)
 5. View the import results
 
 ## Tips for Best Results
 
-### Excel Files:
+### CSV Files:
 - Use the first row for headers
-- Keep data in the first worksheet
-- Ensure numeric values are properly formatted
+- Ensure numeric values are properly formatted (use decimal point, not comma)
 - Use consistent units (g, ml, Kg, Liter, Pc)
-
-### PDF Files:
-- Ensure text is selectable (not scanned images)
-- Use consistent formatting for ingredient lists
-- Simple, structured layouts work best
+- Enclose text with commas in quotes: "Chicken, boneless"
 
 ### Error Handling:
 - Invalid rows are skipped with console logging
 - Duplicate ingredients (by name) are automatically skipped
 - Import continues even if some items fail to process
+- Detailed error messages help identify issues
 
 ## Supported File Extensions:
-- Excel: .xlsx, .xls
-- PDF: .pdf
-- Images: .jpg, .jpeg, .png, .bmp
+- CSV: .csv
+- Text: .txt (comma-separated)
 
 ## Sample File
 A sample CSV file (`sample_ingredients.csv`) is included in the project root for testing the import functionality.

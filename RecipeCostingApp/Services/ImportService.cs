@@ -4,8 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using RecipeCostingApp.Models;
-using System.Text.RegularExpressions;
-using Microsoft.Win32;
 
 namespace RecipeCostingApp.Services
 {
@@ -18,72 +16,42 @@ namespace RecipeCostingApp.Services
             _ingredientService = new IngredientService();
         }
 
-        public async Task<List<Ingredient>> ImportFromExcelAsync(string filePath)
-        {
-            // For now, treat Excel files as CSV
-            return await ImportFromCsvAsync(filePath);
-        }
-
         public async Task<List<Ingredient>> ImportFromCsvAsync(string filePath)
         {
             var ingredients = new List<Ingredient>();
-            var lines = await File.ReadAllLinesAsync(filePath);
             
-            if (lines.Length < 2) return ingredients;
-
-            var headers = ParseCsvLine(lines[0]);
-            var columnMap = MapColumns(headers);
-
-            for (int i = 1; i < lines.Length; i++)
-            {
-                try
-                {
-                    var values = ParseCsvLine(lines[i]);
-                    var ingredient = ParseIngredientFromValues(values, columnMap, headers);
-                    if (ingredient != null && !string.IsNullOrWhiteSpace(ingredient.Name))
-                    {
-                        ingredients.Add(ingredient);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error processing row {i + 1}: {ex.Message}");
-                }
-            }
-
-            return ingredients;
-        }
-
-        public async Task<List<Ingredient>> ImportFromPdfAsync(string filePath)
-        {
-            var ingredients = new List<Ingredient>();
-            
-            // Simple text file reading for now
             try
             {
-                var text = await File.ReadAllTextAsync(filePath);
-                var lines = text.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+                var lines = await File.ReadAllLinesAsync(filePath);
                 
-                foreach (var line in lines)
+                if (lines.Length < 2) return ingredients;
+
+                var headers = ParseCsvLine(lines[0]);
+                var columnMap = MapColumns(headers);
+
+                for (int i = 1; i < lines.Length; i++)
                 {
-                    var ingredient = ParseIngredientFromText(line.Trim());
-                    if (ingredient != null && !string.IsNullOrWhiteSpace(ingredient.Name))
+                    try
                     {
-                        ingredients.Add(ingredient);
+                        var values = ParseCsvLine(lines[i]);
+                        var ingredient = ParseIngredientFromValues(values, columnMap);
+                        if (ingredient != null && !string.IsNullOrWhiteSpace(ingredient.Name))
+                        {
+                            ingredients.Add(ingredient);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error processing row {i + 1}: {ex.Message}");
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                throw new InvalidOperationException("Could not read PDF file. Please convert to text format first.");
+                throw new InvalidOperationException($"Error reading CSV file: {ex.Message}");
             }
 
             return ingredients;
-        }
-
-        public async Task<string> ProcessImageAsync(string imagePath)
-        {
-            return $"Image processed: {Path.GetFileName(imagePath)}";
         }
 
         private string[] ParseCsvLine(string line)
@@ -116,7 +84,6 @@ namespace RecipeCostingApp.Services
         private Dictionary<string, int> MapColumns(string[] headers)
         {
             var columnMap = new Dictionary<string, int>();
-            var additionalColumns = new Dictionary<string, int>();
             
             for (int i = 0; i < headers.Length; i++)
             {
@@ -135,21 +102,12 @@ namespace RecipeCostingApp.Services
                     columnMap["price"] = i;
                 else if (header.Contains("waste"))
                     columnMap["waste"] = i;
-                else
-                {
-                    additionalColumns[header] = i;
-                }
-            }
-            
-            foreach (var kvp in additionalColumns)
-            {
-                columnMap[$"additional_{kvp.Key}"] = kvp.Value;
             }
 
             return columnMap;
         }
 
-        private Ingredient ParseIngredientFromValues(string[] values, Dictionary<string, int> columnMap, string[] headers)
+        private Ingredient ParseIngredientFromValues(string[] values, Dictionary<string, int> columnMap)
         {
             var ingredient = new Ingredient();
 
@@ -190,74 +148,7 @@ namespace RecipeCostingApp.Services
                     ingredient.WastePercentage = waste;
             }
 
-            // Parse additional fields - skip for now
-            // foreach (var kvp in columnMap.Where(c => c.Key.StartsWith("additional_")))
-            // {
-            //     var fieldName = kvp.Key.Substring(11);
-            //     if (kvp.Value < values.Length)
-            //     {
-            //         var cellValue = values[kvp.Value]?.Trim();
-            //         if (!string.IsNullOrEmpty(cellValue))
-            //         {
-            //             ingredient.AdditionalFields[fieldName] = cellValue;
-            //         }
-            //     }
-            // }
-
             return ingredient;
-        }
-
-private Ingredient ParseIngredientFromText(string line)
-        {
-            // Simple pattern matching for ingredient data
-            // Format: "Name - Category - Price - Unit"
-            var patterns = new[]
-            {
-                @"^(.+?)\s*-\s*(.+?)\s*-\s*(\d+\.?\d*)\s*-\s*(.+?)$",
-                @"^(.+?)\s+(\d+\.?\d*)\s+(.+?)$",
-                @"^(.+?)\s*,\s*(.+?)\s*,\s*(\d+\.?\d*).*$"
-            };
-
-            foreach (var pattern in patterns)
-            {
-                var match = Regex.Match(line, pattern, RegexOptions.IgnoreCase);
-                if (match.Success)
-                {
-                    var ingredient = new Ingredient
-                    {
-                        Name = match.Groups[1].Value.Trim(),
-                        Category = match.Groups.Count > 4 ? match.Groups[2].Value.Trim() : "General",
-                        Unit = "g",
-                        PurchaseUnit = 1000,
-                        WastePercentage = 0
-                    };
-
-                    // Try to parse price
-                    var priceGroup = match.Groups.Count > 4 ? match.Groups[3].Value : match.Groups[2].Value;
-                    if (decimal.TryParse(priceGroup, out decimal price))
-                    {
-                        ingredient.Price = price;
-                    }
-
-                    return ingredient;
-                }
-            }
-
-            // If no pattern matches, create basic ingredient with just name
-            if (!string.IsNullOrWhiteSpace(line) && line.Length > 2)
-            {
-                return new Ingredient
-                {
-                    Name = line,
-                    Category = "General",
-                    Unit = "g",
-                    PurchaseUnit = 1000,
-                    Price = 0,
-                    WastePercentage = 0
-                };
-            }
-
-            return null;
         }
 
         public async Task<int> SaveImportedIngredientsAsync(List<Ingredient> ingredients, bool skipDuplicates = true)

@@ -55,8 +55,8 @@ namespace RecipeCostingApp.Services
             {
                 // Insert new ingredient
                 var insertQuery = @"
-                    INSERT INTO Ingredients (Name, Category, Unit, PurchaseUnit, Price, WastePercentage, Yield, AdditionalFields, CreatedDate, ModifiedDate)
-                    VALUES (@name, @category, @unit, @purchaseUnit, @price, @wastePercentage, @yield, @additionalFields, @createdDate, @modifiedDate);
+                    INSERT INTO Ingredients (Name, Category, Unit, PurchaseUnit, Price, WastePercentage, Yield, CreatedDate, ModifiedDate)
+                    VALUES (@name, @category, @unit, @purchaseUnit, @price, @wastePercentage, @yield, @createdDate, @modifiedDate);
                     SELECT last_insert_rowid();";
 
                 using var command = new SqliteCommand(insertQuery, connection);
@@ -65,7 +65,6 @@ namespace RecipeCostingApp.Services
                 ingredient.ModifiedDate = DateTime.Now;
                 command.Parameters.AddWithValue("@createdDate", ingredient.CreatedDate.ToString("yyyy-MM-dd HH:mm:ss"));
                 command.Parameters.AddWithValue("@modifiedDate", ingredient.ModifiedDate.ToString("yyyy-MM-dd HH:mm:ss"));
-                command.Parameters.AddWithValue("@additionalFields", "");
 
                 var result = await command.ExecuteScalarAsync();
                 ingredient.Id = Convert.ToInt32(result);
@@ -77,14 +76,13 @@ namespace RecipeCostingApp.Services
                 var updateQuery = @"
                     UPDATE Ingredients 
                     SET Name = @name, Category = @category, Unit = @unit, PurchaseUnit = @purchaseUnit, 
-                        Price = @price, WastePercentage = @wastePercentage, Yield = @yield, AdditionalFields = @additionalFields, ModifiedDate = @modifiedDate
+                        Price = @price, WastePercentage = @wastePercentage, Yield = @yield, ModifiedDate = @modifiedDate
                     WHERE Id = @id";
 
                 using var command = new SqliteCommand(updateQuery, connection);
                 AddIngredientParameters(command, ingredient);
                 ingredient.ModifiedDate = DateTime.Now;
                 command.Parameters.AddWithValue("@modifiedDate", ingredient.ModifiedDate.ToString("yyyy-MM-dd HH:mm:ss"));
-                command.Parameters.AddWithValue("@additionalFields", "");
                 command.Parameters.AddWithValue("@id", ingredient.Id);
 
                 await command.ExecuteNonQueryAsync();
@@ -126,7 +124,7 @@ namespace RecipeCostingApp.Services
 
         private static Ingredient MapIngredient(SqliteDataReader reader)
         {
-            var ingredient = new Ingredient
+            return new Ingredient
             {
                 Id = reader.GetInt32(0),
                 Name = reader.GetString(1),
@@ -136,11 +134,9 @@ namespace RecipeCostingApp.Services
                 Price = reader.GetDecimal(5),
                 WastePercentage = reader.GetDecimal(6),
                 Yield = reader.GetDecimal(7),
-                CreatedDate = DateTime.Parse(reader.GetString(9)),
-                ModifiedDate = DateTime.Parse(reader.GetString(10))
+                CreatedDate = DateTime.Parse(reader.GetString(8)),
+                ModifiedDate = DateTime.Parse(reader.GetString(9))
             };
-            
-            return ingredient;
         }
 
         private static void AddIngredientParameters(SqliteCommand command, Ingredient ingredient)
