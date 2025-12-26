@@ -87,3 +87,6 @@ Currently provides basic image processing. For full OCR functionality, additiona
 - Excel: .xlsx, .xls
 - PDF: .pdf
 - Images: .jpg, .jpeg, .png, .bmp
+
+## Sample File
+A sample CSV file (`sample_ingredients.csv`) is included in the project root for testing the import functionality.

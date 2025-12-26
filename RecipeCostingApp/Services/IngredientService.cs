@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using RecipeCostingApp.Data;
 using RecipeCostingApp.Models;
+using System.Text.Json;
 
 namespace RecipeCostingApp.Services
 {
@@ -55,8 +56,8 @@ namespace RecipeCostingApp.Services
             {
                 // Insert new ingredient
                 var insertQuery = @"
-                    INSERT INTO Ingredients (Name, Category, Unit, PurchaseUnit, Price, WastePercentage, Yield, CreatedDate, ModifiedDate)
-                    VALUES (@name, @category, @unit, @purchaseUnit, @price, @wastePercentage, @yield, @createdDate, @modifiedDate);
+                    INSERT INTO Ingredients (Name, Category, Unit, PurchaseUnit, Price, WastePercentage, Yield, AdditionalFields, CreatedDate, ModifiedDate)
+                    VALUES (@name, @category, @unit, @purchaseUnit, @price, @wastePercentage, @yield, @additionalFields, @createdDate, @modifiedDate);
                     SELECT last_insert_rowid();";
 
                 using var command = new SqliteCommand(insertQuery, connection);
@@ -65,6 +66,7 @@ namespace RecipeCostingApp.Services
                 ingredient.ModifiedDate = DateTime.Now;
                 command.Parameters.AddWithValue("@createdDate", ingredient.CreatedDate.ToString("yyyy-MM-dd HH:mm:ss"));
                 command.Parameters.AddWithValue("@modifiedDate", ingredient.ModifiedDate.ToString("yyyy-MM-dd HH:mm:ss"));
+                command.Parameters.AddWithValue("@additionalFields", JsonSerializer.Serialize(ingredient.AdditionalFields));
 
                 var result = await command.ExecuteScalarAsync();
                 ingredient.Id = Convert.ToInt32(result);
@@ -76,13 +78,14 @@ namespace RecipeCostingApp.Services
                 var updateQuery = @"
                     UPDATE Ingredients 
                     SET Name = @name, Category = @category, Unit = @unit, PurchaseUnit = @purchaseUnit, 
-                        Price = @price, WastePercentage = @wastePercentage, Yield = @yield, ModifiedDate = @modifiedDate
+                        Price = @price, WastePercentage = @wastePercentage, Yield = @yield, AdditionalFields = @additionalFields, ModifiedDate = @modifiedDate
                     WHERE Id = @id";
 
                 using var command = new SqliteCommand(updateQuery, connection);
                 AddIngredientParameters(command, ingredient);
                 ingredient.ModifiedDate = DateTime.Now;
                 command.Parameters.AddWithValue("@modifiedDate", ingredient.ModifiedDate.ToString("yyyy-MM-dd HH:mm:ss"));
+                command.Parameters.AddWithValue("@additionalFields", JsonSerializer.Serialize(ingredient.AdditionalFields));
                 command.Parameters.AddWithValue("@id", ingredient.Id);
 
                 await command.ExecuteNonQueryAsync();
@@ -124,7 +127,7 @@ namespace RecipeCostingApp.Services
 
         private static Ingredient MapIngredient(SqliteDataReader reader)
         {
-            return new Ingredient
+            var ingredient = new Ingredient
             {
                 Id = reader.GetInt32(0),
                 Name = reader.GetString(1),
@@ -134,9 +137,22 @@ namespace RecipeCostingApp.Services
                 Price = reader.GetDecimal(5),
                 WastePercentage = reader.GetDecimal(6),
                 Yield = reader.GetDecimal(7),
-                CreatedDate = DateTime.Parse(reader.GetString(8)),
-                ModifiedDate = DateTime.Parse(reader.GetString(9))
+                CreatedDate = DateTime.Parse(reader.GetString(9)),
+                ModifiedDate = DateTime.Parse(reader.GetString(10))
             };
+            
+            // Deserialize AdditionalFields if present
+            try
+            {
+                var additionalFieldsJson = reader.IsDBNull(8) ? "{}" : reader.GetString(8);
+                ingredient.AdditionalFields = JsonSerializer.Deserialize<Dictionary<string, string>>(additionalFieldsJson) ?? new Dictionary<string, string>();
+            }
+            catch
+            {
+                ingredient.AdditionalFields = new Dictionary<string, string>();
+            }
+            
+            return ingredient;
         }
 
         private static void AddIngredientParameters(SqliteCommand command, Ingredient ingredient)
