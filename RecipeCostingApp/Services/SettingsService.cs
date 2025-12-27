@@ -64,7 +64,7 @@ namespace RecipeCostingApp.Services
     public class AppSettings
     {
         public decimal DefaultGstPercentage { get; set; } = 18;
-        public string CurrencySymbol { get; set; } = "$";
+        public string CurrencySymbol { get; set; } = "KWD";
         public string CompanyName { get; set; } = "Your Restaurant Name";
         public bool AutoBackup { get; set; } = false;
         public bool ShowTooltips { get; set; } = true;

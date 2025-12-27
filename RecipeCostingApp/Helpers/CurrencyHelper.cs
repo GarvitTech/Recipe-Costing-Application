@@ -8,7 +8,7 @@ namespace RecipeCostingApp.Helpers
         public static string FormatCurrency(decimal amount)
         {
             var symbol = SettingsService.Instance.Settings.CurrencySymbol;
-            return $"{symbol}{amount:F2}";
+            return $"{amount:F3} {symbol}"; // KWD uses 3 decimal places
         }
 
         public static string FormatCurrency(double amount)
