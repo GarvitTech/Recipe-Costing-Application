@@ -39,13 +39,35 @@ namespace RecipeCostingApp.Views
             TxtDelivery.TextChanged += UpdateCalculations;
             TxtSellingPrice.TextChanged += UpdateCalculations;
             TxtRecipeWaste.TextChanged += UpdateCalculations;
+            TxtPortions.TextChanged += UpdateCalculations;
             _recipeIngredients.CollectionChanged += (s, e) => UpdateCalculations(null, null);
         }
 
         private void BtnAddIngredient_Click(object sender, RoutedEventArgs e)
         {
-            if (CmbIngredients.SelectedItem is Ingredient ingredient && 
-                decimal.TryParse(TxtQuantity.Text, out decimal quantity) && quantity > 0)
+            Ingredient ingredient = null;
+            
+            // Check if it's a selected item or typed text
+            if (CmbIngredients.SelectedItem is Ingredient selectedIngredient)
+            {
+                ingredient = selectedIngredient;
+            }
+            else if (!string.IsNullOrWhiteSpace(CmbIngredients.Text))
+            {
+                // Find ingredient by name (case-insensitive)
+                var ingredients = CmbIngredients.ItemsSource as System.Collections.Generic.List<Ingredient>;
+                ingredient = ingredients?.FirstOrDefault(i => 
+                    string.Equals(i.Name, CmbIngredients.Text, StringComparison.OrdinalIgnoreCase));
+                
+                if (ingredient == null)
+                {
+                    MessageBox.Show($"Ingredient '{CmbIngredients.Text}' not found. Please select from the list or add it to Item Master first.", 
+                                  "Ingredient Not Found", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+            }
+            
+            if (ingredient != null && decimal.TryParse(TxtQuantity.Text, out decimal quantity) && quantity > 0)
             {
                 var recipeIngredient = new RecipeIngredient
                 {
@@ -56,7 +78,13 @@ namespace RecipeCostingApp.Views
                 
                 _recipeIngredients.Add(recipeIngredient);
                 TxtQuantity.Text = "";
+                CmbIngredients.Text = "";
                 CmbIngredients.SelectedIndex = -1;
+            }
+            else
+            {
+                MessageBox.Show("Please select an ingredient and enter a valid quantity.", "Invalid Input", 
+                              MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
@@ -84,6 +112,7 @@ namespace RecipeCostingApp.Views
             recipe.PackagingCharges = decimal.TryParse(TxtPackaging.Text, out var pkg) ? pkg : 0;
             recipe.DeliveryCharges = decimal.TryParse(TxtDelivery.Text, out var del) ? del : 0;
             recipe.SellingPrice = decimal.TryParse(TxtSellingPrice.Text, out var sell) ? sell : 0;
+            recipe.Portions = int.TryParse(TxtPortions.Text, out var portions) && portions > 0 ? portions : 1;
             
             recipe.Ingredients.Clear();
             foreach (var ingredient in _recipeIngredients)
@@ -93,6 +122,7 @@ namespace RecipeCostingApp.Views
 
             await _recipeService.SaveRecipeAsync(recipe);
             MessageBox.Show("Recipe saved successfully!", "Success");
+            _currentRecipe = recipe;
         }
 
         private void BtnClearRecipe_Click(object sender, RoutedEventArgs e)
@@ -101,6 +131,7 @@ namespace RecipeCostingApp.Views
             TxtRecipeName.Text = "";
             CmbRecipeCategory.SelectedIndex = -1;
             TxtRecipeWaste.Text = "0";
+            TxtPortions.Text = "1";
             TxtGst.Text = "18";
             TxtPackaging.Text = "0";
             TxtDelivery.Text = "0";
@@ -120,19 +151,28 @@ namespace RecipeCostingApp.Views
             var packaging = decimal.TryParse(TxtPackaging.Text, out var pkg) ? pkg : 0;
             var delivery = decimal.TryParse(TxtDelivery.Text, out var del) ? del : 0;
             var sellingPrice = decimal.TryParse(TxtSellingPrice.Text, out var sell) ? sell : 0;
+            var portions = int.TryParse(TxtPortions.Text, out var port) && port > 0 ? port : 1;
             
             var gstAmount = adjustedCost * (gstPercentage / 100);
             var finalCost = adjustedCost + gstAmount + packaging + delivery;
+            var costPerPortion = finalCost / portions;
             var profit = sellingPrice - finalCost;
             var costPercentage = sellingPrice > 0 ? (finalCost / sellingPrice) * 100 : 0;
             var grossMargin = sellingPrice > 0 ? (profit / sellingPrice) * 100 : 0;
             
             TxtTotalWeight.Text = $"Total Weight: {totalWeight:F1}g";
             TxtRecipeCost.Text = $"Recipe Cost: {recipeCost:C2}";
+            TxtCostPerPortion.Text = $"Cost per Portion: {costPerPortion:C2}";
             TxtFinalCost.Text = $"Final Cost: {finalCost:C2}";
             TxtProfit.Text = $"Profit: {profit:C2}";
             TxtCostPercentage.Text = $"Cost %: {costPercentage:F1}%";
             TxtGrossMargin.Text = $"Margin %: {grossMargin:F1}%";
+        }
+        
+        private void BtnAddSubRecipe_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Sub-recipe functionality will be available in the next update.", "Coming Soon", 
+                          MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }

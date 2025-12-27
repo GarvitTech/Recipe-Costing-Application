@@ -56,6 +56,9 @@ namespace RecipeCostingApp.Data
                     PackagingCharges DECIMAL DEFAULT 0,
                     DeliveryCharges DECIMAL DEFAULT 0,
                     SellingPrice DECIMAL DEFAULT 0,
+                    Portions INTEGER DEFAULT 1,
+                    ParentRecipeId INTEGER DEFAULT 0,
+                    IsSubRecipe BOOLEAN DEFAULT 0,
                     CreatedDate TEXT NOT NULL,
                     ModifiedDate TEXT NOT NULL
                 );

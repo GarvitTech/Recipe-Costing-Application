@@ -67,6 +67,10 @@
                     <Button Name="BtnSettings" Content="⚙️ Settings" 
                             Style="{StaticResource PrimaryButton}" Margin="0,5" 
                             HorizontalAlignment="Stretch" Click="BtnSettings_Click"/>
+                    
+                    <Button Name="BtnThemeToggle" Content="🌙 Dark Mode" 
+                            Style="{StaticResource PrimaryButton}" Margin="0,5" 
+                            HorizontalAlignment="Stretch" Click="BtnThemeToggle_Click"/>
                 </StackPanel>
             </Border>
 

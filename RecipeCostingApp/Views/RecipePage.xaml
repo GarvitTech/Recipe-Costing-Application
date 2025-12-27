@@ -42,6 +42,9 @@
                 <Label Grid.Row="1" Grid.Column="0" Content="Waste %:" Style="{StaticResource FieldLabel}" Margin="0,10,10,0"/>
                 <TextBox Grid.Row="1" Grid.Column="1" Name="TxtRecipeWaste" Style="{StaticResource InputTextBox}" Text="0" Margin="0,10,20,0"/>
 
+                <Label Grid.Row="1" Grid.Column="2" Content="Portions:" Style="{StaticResource FieldLabel}" Margin="0,10,10,0"/>
+                <TextBox Grid.Row="1" Grid.Column="3" Name="TxtPortions" Style="{StaticResource InputTextBox}" Text="1" Margin="0,10,0,0"/>
+
                 <StackPanel Grid.Row="1" Grid.Column="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
                     <Button Name="BtnSaveRecipe" Content="💾 Save Recipe" Style="{StaticResource PrimaryButton}" Margin="0,0,10,0" Click="BtnSaveRecipe_Click"/>
                     <Button Name="BtnClearRecipe" Content="🗑️ Clear" Style="{StaticResource PrimaryButton}" Click="BtnClearRecipe_Click"/>
@@ -67,9 +70,12 @@
                     </Grid.RowDefinitions>
 
                     <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="15,10">
-                        <ComboBox Name="CmbIngredients" Width="200" Style="{StaticResource InputComboBox}" DisplayMemberPath="Name"/>
+                        <ComboBox Name="CmbIngredients" Width="200" Style="{StaticResource InputComboBox}" 
+                                 DisplayMemberPath="Name" IsEditable="True" IsTextSearchEnabled="True"/>
                         <TextBox Name="TxtQuantity" Width="100" Style="{StaticResource InputTextBox}" Margin="10,0" ToolTip="Quantity"/>
                         <Button Name="BtnAddIngredient" Content="➕ Add" Style="{StaticResource PrimaryButton}" Click="BtnAddIngredient_Click"/>
+                        <Button Name="BtnAddSubRecipe" Content="📋 Add Sub-Recipe" Style="{StaticResource PrimaryButton}" 
+                               Margin="10,0,0,0" Click="BtnAddSubRecipe_Click"/>
                     </StackPanel>
 
                     <DataGrid Grid.Row="1" Name="DgRecipeIngredients" Style="{StaticResource ModernDataGrid}">
@@ -92,6 +98,7 @@
                         <StackPanel>
                             <TextBlock Name="TxtTotalWeight" Text="Total Weight: 0g" FontWeight="Bold"/>
                             <TextBlock Name="TxtRecipeCost" Text="Recipe Cost: $0.00" FontWeight="Bold"/>
+                            <TextBlock Name="TxtCostPerPortion" Text="Cost per Portion: $0.00" FontWeight="Bold"/>
                         </StackPanel>
                     </Border>
                 </Grid>

@@ -17,6 +17,9 @@ namespace RecipeCostingApp.Models
         private decimal _packagingCharges;
         private decimal _deliveryCharges;
         private decimal _sellingPrice;
+        private int _portions = 1;
+        private int _parentRecipeId;
+        private bool _isSubRecipe;
 
         public Recipe()
         {
@@ -104,6 +107,30 @@ namespace RecipeCostingApp.Models
             }
         }
 
+        public int Portions
+        {
+            get => _portions;
+            set 
+            { 
+                _portions = value > 0 ? value : 1; 
+                OnPropertyChanged(nameof(Portions));
+                OnPropertyChanged(nameof(CostPerPortion));
+                RecalculateCosts();
+            }
+        }
+
+        public int ParentRecipeId
+        {
+            get => _parentRecipeId;
+            set { _parentRecipeId = value; OnPropertyChanged(nameof(ParentRecipeId)); }
+        }
+
+        public bool IsSubRecipe
+        {
+            get => _isSubRecipe;
+            set { _isSubRecipe = value; OnPropertyChanged(nameof(IsSubRecipe)); }
+        }
+
         public ObservableCollection<RecipeIngredient> Ingredients { get; set; } = new ObservableCollection<RecipeIngredient>();
 
         // Calculated Properties
@@ -115,6 +142,7 @@ namespace RecipeCostingApp.Models
         public decimal Profit => SellingPrice - FinalCost;
         public decimal CostPercentage => SellingPrice > 0 ? (FinalCost / SellingPrice) * 100 : 0;
         public decimal GrossMargin => SellingPrice > 0 ? (Profit / SellingPrice) * 100 : 0;
+        public decimal CostPerPortion => Portions > 0 ? FinalCost / Portions : FinalCost;
 
         // Formatted Currency Properties
         public string FormattedRecipeCost => CurrencyHelper.FormatCurrency(RecipeCost);

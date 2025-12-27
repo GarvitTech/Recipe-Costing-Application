@@ -39,8 +39,8 @@ namespace RecipeCostingApp.Services
             {
                 if (recipe.Id == 0)
                 {
-                    var insertQuery = @"INSERT INTO Recipes (Name, Category, WastePercentage, GstPercentage, PackagingCharges, DeliveryCharges, SellingPrice, CreatedDate, ModifiedDate)
-                        VALUES (@name, @category, @waste, @gst, @packaging, @delivery, @selling, @created, @modified);
+                    var insertQuery = @"INSERT INTO Recipes (Name, Category, WastePercentage, GstPercentage, PackagingCharges, DeliveryCharges, SellingPrice, Portions, ParentRecipeId, IsSubRecipe, CreatedDate, ModifiedDate)
+                        VALUES (@name, @category, @waste, @gst, @packaging, @delivery, @selling, @portions, @parentId, @isSubRecipe, @created, @modified);
                         SELECT last_insert_rowid();";
                     
                     using var command = new SqliteCommand(insertQuery, connection, transaction);
@@ -51,7 +51,7 @@ namespace RecipeCostingApp.Services
                 {
                     var updateQuery = @"UPDATE Recipes SET Name=@name, Category=@category, WastePercentage=@waste, 
                         GstPercentage=@gst, PackagingCharges=@packaging, DeliveryCharges=@delivery, 
-                        SellingPrice=@selling, ModifiedDate=@modified WHERE Id=@id";
+                        SellingPrice=@selling, Portions=@portions, ParentRecipeId=@parentId, IsSubRecipe=@isSubRecipe, ModifiedDate=@modified WHERE Id=@id";
                     
                     using var command = new SqliteCommand(updateQuery, connection, transaction);
                     AddRecipeParameters(command, recipe);
@@ -142,8 +142,11 @@ namespace RecipeCostingApp.Services
                 PackagingCharges = reader.GetDecimal(5),
                 DeliveryCharges = reader.GetDecimal(6),
                 SellingPrice = reader.GetDecimal(7),
-                CreatedDate = DateTime.Parse(reader.GetString(8)),
-                ModifiedDate = DateTime.Parse(reader.GetString(9))
+                Portions = reader.GetInt32(8),
+                ParentRecipeId = reader.GetInt32(9),
+                IsSubRecipe = reader.GetBoolean(10),
+                CreatedDate = DateTime.Parse(reader.GetString(11)),
+                ModifiedDate = DateTime.Parse(reader.GetString(12))
             };
         }
 
@@ -159,6 +162,9 @@ namespace RecipeCostingApp.Services
             command.Parameters.AddWithValue("@packaging", recipe.PackagingCharges);
             command.Parameters.AddWithValue("@delivery", recipe.DeliveryCharges);
             command.Parameters.AddWithValue("@selling", recipe.SellingPrice);
+            command.Parameters.AddWithValue("@portions", recipe.Portions);
+            command.Parameters.AddWithValue("@parentId", recipe.ParentRecipeId);
+            command.Parameters.AddWithValue("@isSubRecipe", recipe.IsSubRecipe);
             command.Parameters.AddWithValue("@created", recipe.CreatedDate.ToString("yyyy-MM-dd HH:mm:ss"));
             command.Parameters.AddWithValue("@modified", recipe.ModifiedDate.ToString("yyyy-MM-dd HH:mm:ss"));
         }
