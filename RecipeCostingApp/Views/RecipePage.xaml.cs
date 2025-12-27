@@ -141,32 +141,39 @@ namespace RecipeCostingApp.Views
 
         private void UpdateCalculations(object sender, TextChangedEventArgs e)
         {
-            var totalWeight = _recipeIngredients.Sum(i => i.Quantity);
-            var recipeCost = _recipeIngredients.Sum(i => i.TotalCost);
-            
-            var wastePercentage = decimal.TryParse(TxtRecipeWaste.Text, out var waste) ? waste : 0;
-            var adjustedCost = wastePercentage > 0 ? recipeCost / (1 - wastePercentage / 100) : recipeCost;
-            
-            var gstPercentage = decimal.TryParse(TxtGst.Text, out var gst) ? gst : 0;
-            var packaging = decimal.TryParse(TxtPackaging.Text, out var pkg) ? pkg : 0;
-            var delivery = decimal.TryParse(TxtDelivery.Text, out var del) ? del : 0;
-            var sellingPrice = decimal.TryParse(TxtSellingPrice.Text, out var sell) ? sell : 0;
-            var portions = int.TryParse(TxtPortions.Text, out var port) && port > 0 ? port : 1;
-            
-            var gstAmount = adjustedCost * (gstPercentage / 100);
-            var finalCost = adjustedCost + gstAmount + packaging + delivery;
-            var costPerPortion = finalCost / portions;
-            var profit = sellingPrice - finalCost;
-            var costPercentage = sellingPrice > 0 ? (finalCost / sellingPrice) * 100 : 0;
-            var grossMargin = sellingPrice > 0 ? (profit / sellingPrice) * 100 : 0;
-            
-            TxtTotalWeight.Text = $"Total Weight: {totalWeight:F1}g";
-            TxtRecipeCost.Text = $"Recipe Cost: {recipeCost:C2}";
-            TxtCostPerPortion.Text = $"Cost per Portion: {costPerPortion:C2}";
-            TxtFinalCost.Text = $"Final Cost: {finalCost:C2}";
-            TxtProfit.Text = $"Profit: {profit:C2}";
-            TxtCostPercentage.Text = $"Cost %: {costPercentage:F1}%";
-            TxtGrossMargin.Text = $"Margin %: {grossMargin:F1}%";
+            try
+            {
+                var totalWeight = _recipeIngredients?.Sum(i => i.Quantity) ?? 0;
+                var recipeCost = _recipeIngredients?.Sum(i => i.TotalCost) ?? 0;
+                
+                var wastePercentage = decimal.TryParse(TxtRecipeWaste?.Text, out var waste) ? waste : 0;
+                var adjustedCost = wastePercentage > 0 ? recipeCost / (1 - wastePercentage / 100) : recipeCost;
+                
+                var gstPercentage = decimal.TryParse(TxtGst?.Text, out var gst) ? gst : 0;
+                var packaging = decimal.TryParse(TxtPackaging?.Text, out var pkg) ? pkg : 0;
+                var delivery = decimal.TryParse(TxtDelivery?.Text, out var del) ? del : 0;
+                var sellingPrice = decimal.TryParse(TxtSellingPrice?.Text, out var sell) ? sell : 0;
+                var portions = int.TryParse(TxtPortions?.Text, out var port) && port > 0 ? port : 1;
+                
+                var gstAmount = adjustedCost * (gstPercentage / 100);
+                var finalCost = adjustedCost + gstAmount + packaging + delivery;
+                var costPerPortion = finalCost / portions;
+                var profit = sellingPrice - finalCost;
+                var costPercentage = sellingPrice > 0 ? (finalCost / sellingPrice) * 100 : 0;
+                var grossMargin = sellingPrice > 0 ? (profit / sellingPrice) * 100 : 0;
+                
+                if (TxtTotalWeight != null) TxtTotalWeight.Text = $"Total Weight: {totalWeight:F1}g";
+                if (TxtRecipeCost != null) TxtRecipeCost.Text = $"Recipe Cost: {recipeCost:C2}";
+                if (TxtCostPerPortion != null) TxtCostPerPortion.Text = $"Cost per Portion: {costPerPortion:C2}";
+                if (TxtFinalCost != null) TxtFinalCost.Text = $"Final Cost: {finalCost:C2}";
+                if (TxtProfit != null) TxtProfit.Text = $"Profit: {profit:C2}";
+                if (TxtCostPercentage != null) TxtCostPercentage.Text = $"Cost %: {costPercentage:F1}%";
+                if (TxtGrossMargin != null) TxtGrossMargin.Text = $"Margin %: {grossMargin:F1}%";
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Calculation error: {ex.Message}");
+            }
         }
         
         private void BtnAddSubRecipe_Click(object sender, RoutedEventArgs e)

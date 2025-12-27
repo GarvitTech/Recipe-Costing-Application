@@ -2,8 +2,8 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Professional Recipe Costing &amp; Menu Engineering" 
-        Height="800" Width="1200"
-        WindowStartupLocation="CenterScreen"
+        Height="800" Width="1200" MinHeight="600" MinWidth="800"
+        WindowStartupLocation="CenterScreen" WindowState="Maximized"
         Background="{StaticResource BackgroundBrush}">
     
     <Grid>
@@ -32,46 +32,48 @@
 
             <!-- Navigation Panel -->
             <Border Grid.Column="0" Background="{StaticResource SurfaceBrush}" 
-                    BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,1,0">
-                <StackPanel Margin="10">
-                    <Label Content="MODULES" Style="{StaticResource SectionHeader}"/>
-                    
-                    <Button Name="BtnItemMaster" Content="📦 Item Master" 
-                            Style="{StaticResource PrimaryButton}" Margin="0,5" 
-                            HorizontalAlignment="Stretch" Click="BtnItemMaster_Click"/>
-                    
-                    <Button Name="BtnRecipes" Content="📋 Recipes" 
-                            Style="{StaticResource PrimaryButton}" Margin="0,5" 
-                            HorizontalAlignment="Stretch" Click="BtnRecipes_Click"/>
-                    
-                    <Button Name="BtnCosting" Content="💰 Costing Analysis" 
-                            Style="{StaticResource PrimaryButton}" Margin="0,5" 
-                            HorizontalAlignment="Stretch" Click="BtnCosting_Click"/>
-                    
-                    <Button Name="BtnBulkCosting" Content="📊 Bulk Costing" 
-                            Style="{StaticResource PrimaryButton}" Margin="0,5" 
-                            HorizontalAlignment="Stretch" Click="BtnBulkCosting_Click"/>
-                    
-                    <Button Name="BtnMenuEngineering" Content="🎯 Menu Engineering" 
-                            Style="{StaticResource PrimaryButton}" Margin="0,5" 
-                            HorizontalAlignment="Stretch" Click="BtnMenuEngineering_Click"/>
+                    BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,1,0" MinWidth="200">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="10">
+                        <Label Content="MODULES" Style="{StaticResource SectionHeader}"/>
+                        
+                        <Button Name="BtnItemMaster" Content="📦 Item Master" 
+                                Style="{StaticResource PrimaryButton}" Margin="0,5" 
+                                HorizontalAlignment="Stretch" Click="BtnItemMaster_Click"/>
+                        
+                        <Button Name="BtnRecipes" Content="📋 Recipes" 
+                                Style="{StaticResource PrimaryButton}" Margin="0,5" 
+                                HorizontalAlignment="Stretch" Click="BtnRecipes_Click"/>
+                        
+                        <Button Name="BtnCosting" Content="💰 Costing Analysis" 
+                                Style="{StaticResource PrimaryButton}" Margin="0,5" 
+                                HorizontalAlignment="Stretch" Click="BtnCosting_Click"/>
+                        
+                        <Button Name="BtnBulkCosting" Content="📊 Bulk Costing" 
+                                Style="{StaticResource PrimaryButton}" Margin="0,5" 
+                                HorizontalAlignment="Stretch" Click="BtnBulkCosting_Click"/>
+                        
+                        <Button Name="BtnMenuEngineering" Content="🎯 Menu Engineering" 
+                                Style="{StaticResource PrimaryButton}" Margin="0,5" 
+                                HorizontalAlignment="Stretch" Click="BtnMenuEngineering_Click"/>
 
-                    <Separator Margin="0,20"/>
-                    
-                    <Label Content="TOOLS" Style="{StaticResource SectionHeader}"/>
-                    
-                    <Button Name="BtnBackup" Content="💾 Backup Data" 
-                            Style="{StaticResource PrimaryButton}" Margin="0,5" 
-                            HorizontalAlignment="Stretch" Click="BtnBackup_Click"/>
-                    
-                    <Button Name="BtnSettings" Content="⚙️ Settings" 
-                            Style="{StaticResource PrimaryButton}" Margin="0,5" 
-                            HorizontalAlignment="Stretch" Click="BtnSettings_Click"/>
-                    
-                    <Button Name="BtnThemeToggle" Content="🌙 Dark Mode" 
-                            Style="{StaticResource PrimaryButton}" Margin="0,5" 
-                            HorizontalAlignment="Stretch" Click="BtnThemeToggle_Click"/>
-                </StackPanel>
+                        <Separator Margin="0,20"/>
+                        
+                        <Label Content="TOOLS" Style="{StaticResource SectionHeader}"/>
+                        
+                        <Button Name="BtnBackup" Content="💾 Backup Data" 
+                                Style="{StaticResource PrimaryButton}" Margin="0,5" 
+                                HorizontalAlignment="Stretch" Click="BtnBackup_Click"/>
+                        
+                        <Button Name="BtnSettings" Content="⚙️ Settings" 
+                                Style="{StaticResource PrimaryButton}" Margin="0,5" 
+                                HorizontalAlignment="Stretch" Click="BtnSettings_Click"/>
+                        
+                        <Button Name="BtnThemeToggle" Content="🌙 Dark Mode" 
+                                Style="{StaticResource PrimaryButton}" Margin="0,5" 
+                                HorizontalAlignment="Stretch" Click="BtnThemeToggle_Click"/>
+                    </StackPanel>
+                </ScrollViewer>
             </Border>
 
             <!-- Content Area -->

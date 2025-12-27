@@ -10,6 +10,10 @@ namespace RecipeCostingApp
         {
             base.OnStartup(e);
             
+            // Global exception handlers
+            AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+            DispatcherUnhandledException += OnDispatcherUnhandledException;
+            
             try
             {
                 // Initialize database
@@ -21,6 +25,21 @@ namespace RecipeCostingApp
                               MessageBoxButton.OK, MessageBoxImage.Error);
                 Shutdown();
             }
+        }
+        
+        private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            var ex = e.ExceptionObject as Exception;
+            MessageBox.Show($"Unexpected error: {ex?.Message}\n\nThe application will close.", 
+                          "Critical Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            Shutdown();
+        }
+        
+        private void OnDispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            MessageBox.Show($"Application error: {e.Exception.Message}\n\nClick OK to continue.", 
+                          "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+            e.Handled = true;
         }
     }
 }

@@ -31,11 +31,11 @@ namespace RecipeCostingApp.Views
         {
             try
             {
-                _allIngredients = await _ingredientService.GetAllIngredientsAsync();
+                _allIngredients = await _ingredientService.GetAllIngredientsAsync() ?? new List<Ingredient>();
                 DgIngredients.ItemsSource = _allIngredients;
 
                 // Load categories for dropdown
-                var categories = await _ingredientService.GetCategoriesAsync();
+                var categories = await _ingredientService.GetCategoriesAsync() ?? new List<string>();
                 categories.AddRange(new[] { "Vegetables", "Meat", "Dairy", "Dry Store", "Spices", "Oils" });
                 CmbCategory.ItemsSource = categories.Distinct().OrderBy(c => c).ToList();
             }
@@ -43,6 +43,11 @@ namespace RecipeCostingApp.Views
             {
                 MessageBox.Show($"Error loading data: {ex.Message}", "Error", 
                               MessageBoxButton.OK, MessageBoxImage.Error);
+                
+                // Initialize with empty collections to prevent further crashes
+                _allIngredients = new List<Ingredient>();
+                DgIngredients.ItemsSource = _allIngredients;
+                CmbCategory.ItemsSource = new List<string> { "Vegetables", "Meat", "Dairy", "Dry Store", "Spices", "Oils" };
             }
         }
 

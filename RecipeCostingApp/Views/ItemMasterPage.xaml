@@ -21,21 +21,22 @@
         <Border Grid.Row="1" Background="{StaticResource SurfaceBrush}" 
                 BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" 
                 CornerRadius="5" Padding="20" Margin="0,0,0,20">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="200"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="200"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="150"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                <Grid MinWidth="800">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="200"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="200"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
                 <!-- Row 1 -->
                 <Label Grid.Row="0" Grid.Column="0" Content="Name:" Style="{StaticResource FieldLabel}"/>
@@ -84,7 +85,8 @@
                     <Button Name="BtnClear" Content="🗑️ Clear" Style="{StaticResource PrimaryButton}" 
                            Click="BtnClear_Click"/>
                 </StackPanel>
-            </Grid>
+                </Grid>
+            </ScrollViewer>
         </Border>
 
         <!-- Data Grid -->

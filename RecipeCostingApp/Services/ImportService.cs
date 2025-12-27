@@ -22,18 +22,32 @@ namespace RecipeCostingApp.Services
             
             try
             {
+                if (string.IsNullOrWhiteSpace(filePath) || !File.Exists(filePath))
+                {
+                    throw new FileNotFoundException("File not found or path is invalid.");
+                }
+                
                 var lines = await File.ReadAllLinesAsync(filePath);
                 
                 if (lines.Length < 2) return ingredients;
 
                 var headers = ParseCsvLine(lines[0]);
+                if (headers == null || headers.Length == 0)
+                {
+                    throw new InvalidOperationException("No valid headers found in CSV file.");
+                }
+                
                 var columnMap = MapColumns(headers);
 
                 for (int i = 1; i < lines.Length; i++)
                 {
                     try
                     {
+                        if (string.IsNullOrWhiteSpace(lines[i])) continue;
+                        
                         var values = ParseCsvLine(lines[i]);
+                        if (values == null || values.Length == 0) continue;
+                        
                         var ingredient = ParseIngredientFromValues(values, columnMap);
                         if (ingredient != null && !string.IsNullOrWhiteSpace(ingredient.Name))
                         {
@@ -42,13 +56,13 @@ namespace RecipeCostingApp.Services
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Error processing row {i + 1}: {ex.Message}");
+                        System.Diagnostics.Debug.WriteLine($"Error processing row {i + 1}: {ex.Message}");
                     }
                 }
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Error reading CSV file: {ex.Message}");
+                throw new InvalidOperationException($"Error reading CSV file: {ex.Message}", ex);
             }
 
             return ingredients;

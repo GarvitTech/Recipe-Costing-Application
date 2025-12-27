@@ -94,30 +94,55 @@ namespace RecipeCostingApp.Views
         
         private void ApplyDarkTheme()
         {
-            var darkResources = new ResourceDictionary();
-            darkResources["BackgroundBrush"] = new SolidColorBrush(Color.FromRgb(32, 32, 32));
-            darkResources["SurfaceBrush"] = new SolidColorBrush(Color.FromRgb(48, 48, 48));
-            darkResources["BorderBrush"] = new SolidColorBrush(Color.FromRgb(64, 64, 64));
-            darkResources["TextBrush"] = new SolidColorBrush(Colors.White);
-            darkResources["PrimaryBrush"] = new SolidColorBrush(Color.FromRgb(0, 120, 215));
-            darkResources["CalculatedBrush"] = new SolidColorBrush(Color.FromRgb(64, 64, 64));
+            this.Background = new SolidColorBrush(Color.FromRgb(32, 32, 32));
             
-            Application.Current.Resources.MergedDictionaries.Clear();
-            Application.Current.Resources.MergedDictionaries.Add(darkResources);
+            // Update all child elements
+            UpdateElementColors(this, true);
         }
         
         private void ApplyLightTheme()
         {
-            var lightResources = new ResourceDictionary();
-            lightResources["BackgroundBrush"] = new SolidColorBrush(Color.FromRgb(248, 249, 250));
-            lightResources["SurfaceBrush"] = new SolidColorBrush(Colors.White);
-            lightResources["BorderBrush"] = new SolidColorBrush(Color.FromRgb(222, 226, 230));
-            lightResources["TextBrush"] = new SolidColorBrush(Color.FromRgb(33, 37, 41));
-            lightResources["PrimaryBrush"] = new SolidColorBrush(Color.FromRgb(0, 123, 255));
-            lightResources["CalculatedBrush"] = new SolidColorBrush(Color.FromRgb(233, 236, 239));
+            this.Background = new SolidColorBrush(Color.FromRgb(248, 249, 250));
             
-            Application.Current.Resources.MergedDictionaries.Clear();
-            Application.Current.Resources.MergedDictionaries.Add(lightResources);
+            // Update all child elements
+            UpdateElementColors(this, false);
+        }
+        
+        private void UpdateElementColors(DependencyObject parent, bool isDark)
+        {
+            try
+            {
+                for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+                {
+                    var child = VisualTreeHelper.GetChild(parent, i);
+                    
+                    if (child is Border border)
+                    {
+                        border.Background = new SolidColorBrush(isDark ? Color.FromRgb(48, 48, 48) : Colors.White);
+                        border.BorderBrush = new SolidColorBrush(isDark ? Color.FromRgb(64, 64, 64) : Color.FromRgb(222, 226, 230));
+                    }
+                    else if (child is TextBlock textBlock)
+                    {
+                        textBlock.Foreground = new SolidColorBrush(isDark ? Colors.White : Color.FromRgb(33, 37, 41));
+                    }
+                    else if (child is Label label)
+                    {
+                        label.Foreground = new SolidColorBrush(isDark ? Colors.White : Color.FromRgb(33, 37, 41));
+                    }
+                    else if (child is Button button)
+                    {
+                        button.Background = new SolidColorBrush(isDark ? Color.FromRgb(0, 120, 215) : Color.FromRgb(0, 123, 255));
+                        button.Foreground = new SolidColorBrush(Colors.White);
+                    }
+                    
+                    UpdateElementColors(child, isDark);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Ignore theme update errors to prevent crashes
+                System.Diagnostics.Debug.WriteLine($"Theme update error: {ex.Message}");
+            }
         }
     }
 }

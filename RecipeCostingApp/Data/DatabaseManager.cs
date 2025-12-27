@@ -16,19 +16,26 @@ namespace RecipeCostingApp.Data
 
         public static void InitializeDatabase()
         {
-            // Ensure directory exists
-            var directory = Path.GetDirectoryName(DatabasePath);
-            if (!Directory.Exists(directory))
+            try
             {
-                Directory.CreateDirectory(directory);
+                // Ensure directory exists
+                var directory = Path.GetDirectoryName(DatabasePath);
+                if (!Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+
+                // Create database and tables if they don't exist
+                using var connection = new SqliteConnection(ConnectionString);
+                connection.Open();
+
+                CreateTables(connection);
+                SeedDefaultData(connection);
             }
-
-            // Create database and tables if they don't exist
-            using var connection = new SqliteConnection(ConnectionString);
-            connection.Open();
-
-            CreateTables(connection);
-            SeedDefaultData(connection);
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to initialize database: {ex.Message}", ex);
+            }
         }
 
         private static void CreateTables(SqliteConnection connection)
