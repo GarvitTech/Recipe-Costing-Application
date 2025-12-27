@@ -56,8 +56,8 @@
 
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*" MinWidth="400"/>
-                <ColumnDefinition Width="*" MinWidth="300"/>
+                <ColumnDefinition Width="1.5*" MinWidth="400"/>
+                <ColumnDefinition Width="*" MinWidth="400"/>
             </Grid.ColumnDefinitions>
 
             <Border Grid.Column="0" Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" 
@@ -97,8 +97,8 @@
                     <Border Grid.Row="2" Background="{StaticResource CalculatedBrush}" Padding="15">
                         <StackPanel>
                             <TextBlock Name="TxtTotalWeight" Text="Total Weight: 0g" FontWeight="Bold"/>
-                            <TextBlock Name="TxtRecipeCost" Text="Recipe Cost: $0.00" FontWeight="Bold"/>
-                            <TextBlock Name="TxtCostPerPortion" Text="Cost per Portion: $0.00" FontWeight="Bold"/>
+                            <TextBlock Name="TxtRecipeCost" Text="Recipe Cost: 0.000 KWD" FontWeight="Bold"/>
+                            <TextBlock Name="TxtCostPerPortion" Text="Cost per Portion: 0.000 KWD" FontWeight="Bold"/>
                         </StackPanel>
                     </Border>
                 </Grid>
@@ -106,30 +106,32 @@
 
             <Border Grid.Column="1" Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" 
                     BorderThickness="1" CornerRadius="5">
-                <StackPanel Margin="15">
-                    <Label Content="📊 Costing Analysis" Style="{StaticResource SectionHeader}"/>
-                    
-                    <Label Content="GST %:" Style="{StaticResource FieldLabel}"/>
-                    <TextBox Name="TxtGst" Style="{StaticResource InputTextBox}" Text="18" Margin="0,0,0,10"/>
-                    
-                    <Label Content="Packaging:" Style="{StaticResource FieldLabel}"/>
-                    <TextBox Name="TxtPackaging" Style="{StaticResource InputTextBox}" Text="0" Margin="0,0,0,10"/>
-                    
-                    <Label Content="Delivery:" Style="{StaticResource FieldLabel}"/>
-                    <TextBox Name="TxtDelivery" Style="{StaticResource InputTextBox}" Text="0" Margin="0,0,0,10"/>
-                    
-                    <Label Content="Selling Price:" Style="{StaticResource FieldLabel}"/>
-                    <TextBox Name="TxtSellingPrice" Style="{StaticResource InputTextBox}" Margin="0,0,0,20"/>
-                    
-                    <Border Background="{StaticResource CalculatedBrush}" Padding="10" CornerRadius="3">
-                        <StackPanel>
-                            <TextBlock Name="TxtFinalCost" Text="Final Cost: $0.00" FontWeight="Bold"/>
-                            <TextBlock Name="TxtProfit" Text="Profit: $0.00" FontWeight="Bold"/>
-                            <TextBlock Name="TxtCostPercentage" Text="Cost %: 0%" FontWeight="Bold"/>
-                            <TextBlock Name="TxtGrossMargin" Text="Margin %: 0%" FontWeight="Bold"/>
-                        </StackPanel>
-                    </Border>
-                </StackPanel>
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="15">
+                        <Label Content="📊 Costing Analysis" Style="{StaticResource SectionHeader}"/>
+                        
+                        <Label Content="GST %:" Style="{StaticResource FieldLabel}"/>
+                        <TextBox Name="TxtGst" Style="{StaticResource InputTextBox}" Text="18" Margin="0,0,0,10"/>
+                        
+                        <Label Content="Packaging:" Style="{StaticResource FieldLabel}"/>
+                        <TextBox Name="TxtPackaging" Style="{StaticResource InputTextBox}" Text="0" Margin="0,0,0,10"/>
+                        
+                        <Label Content="Delivery:" Style="{StaticResource FieldLabel}"/>
+                        <TextBox Name="TxtDelivery" Style="{StaticResource InputTextBox}" Text="0" Margin="0,0,0,10"/>
+                        
+                        <Label Content="Selling Price:" Style="{StaticResource FieldLabel}"/>
+                        <TextBox Name="TxtSellingPrice" Style="{StaticResource InputTextBox}" Margin="0,0,0,20"/>
+                        
+                        <Border Background="{StaticResource CalculatedBrush}" Padding="10" CornerRadius="3">
+                            <StackPanel>
+                                <TextBlock Name="TxtFinalCost" Text="Final Cost: 0.000 KWD" FontWeight="Bold"/>
+                                <TextBlock Name="TxtProfit" Text="Profit: 0.000 KWD" FontWeight="Bold"/>
+                                <TextBlock Name="TxtCostPercentage" Text="Cost %: 0%" FontWeight="Bold"/>
+                                <TextBlock Name="TxtGrossMargin" Text="Margin %: 0%" FontWeight="Bold"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
             </Border>
         </Grid>
     </Grid>

@@ -163,10 +163,10 @@ namespace RecipeCostingApp.Views
                 var grossMargin = sellingPrice > 0 ? (profit / sellingPrice) * 100 : 0;
                 
                 if (TxtTotalWeight != null) TxtTotalWeight.Text = $"Total Weight: {totalWeight:F1}g";
-                if (TxtRecipeCost != null) TxtRecipeCost.Text = $"Recipe Cost: {recipeCost:C2}";
-                if (TxtCostPerPortion != null) TxtCostPerPortion.Text = $"Cost per Portion: {costPerPortion:C2}";
-                if (TxtFinalCost != null) TxtFinalCost.Text = $"Final Cost: {finalCost:C2}";
-                if (TxtProfit != null) TxtProfit.Text = $"Profit: {profit:C2}";
+                if (TxtRecipeCost != null) TxtRecipeCost.Text = $"Recipe Cost: {recipeCost:F3} KWD";
+                if (TxtCostPerPortion != null) TxtCostPerPortion.Text = $"Cost per Portion: {costPerPortion:F3} KWD";
+                if (TxtFinalCost != null) TxtFinalCost.Text = $"Final Cost: {finalCost:F3} KWD";
+                if (TxtProfit != null) TxtProfit.Text = $"Profit: {profit:F3} KWD";
                 if (TxtCostPercentage != null) TxtCostPercentage.Text = $"Cost %: {costPercentage:F1}%";
                 if (TxtGrossMargin != null) TxtGrossMargin.Text = $"Margin %: {grossMargin:F1}%";
             }
